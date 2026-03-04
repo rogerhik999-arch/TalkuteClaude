@@ -24,7 +24,7 @@ use tokio::runtime::Builder;
 pub use env_logger;
 pub use log;
 pub mod logging;
-pub use logging::{init_logging, info, warn, error, debug, trace};
+pub use logging::{init_logging, info, warn, error, debug, trace, LevelFilter};
 
 // Public API
 pub mod ai;

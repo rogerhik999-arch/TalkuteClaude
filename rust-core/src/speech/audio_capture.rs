@@ -19,7 +19,7 @@ pub struct AudioFormat {
 }
 
 /// Audio encoding types
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 #[allow(dead_code)]
 pub enum AudioEncoding {
     Pcm,
@@ -70,6 +70,11 @@ impl AudioCapture {
         self.is_recording
     }
 
+    /// Get the device ID
+    pub fn device_id(&self) -> &str {
+        &self.device_id
+    }
+
     /// Get the audio format being used
     pub fn get_format(&self) -> &AudioFormat {
         &self.audio_format
@@ -87,8 +92,9 @@ impl AudioCapture {
     }
 
     /// Shutdown platform-specific audio capture
-    fn shutdown_platform(&self) {
+    fn shutdown_platform(&self) -> Result<()> {
         // Platform-specific cleanup
+        Ok(())
     }
 
     /// Get the captured audio data

@@ -1,16 +1,15 @@
-[workspace]
-resolver = "2"
-members = [
-    "rust-core",
-]
-
-[workspace.package]
+[package]
+name = "talkute-core"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Talkute Team"]
 
-[workspace.dependencies]
+[lib]
+name = "talkute_core"
+path = "src/lib.rs"
+
+[dependencies]
 # Async runtime
 tokio = { version = "1.35", features = ["full"] }
 
@@ -22,7 +21,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # SQLite
-rusqlite = { version = "0.30", features = ["bundled"] }
+rusqlite = { version = "0.30", features = ["bundled", "chrono"] }
 
 # UUID
 uuid = { version = "1.6", features = ["v4", "serde"] }
@@ -48,3 +47,6 @@ regex = "1.10"
 
 # Self-correction detection
 levenshtein = "1.0"
+
+[dev-dependencies]
+tokio-test = "0.4"

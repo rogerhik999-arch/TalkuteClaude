@@ -1,8 +1,12 @@
 //! Text processing pipeline
 
-use crate::processing::filler_removal::FillerWords;
-use crate::processing::self_correction::SelfCorrectionDetector;
-use crate::processing::formatter::TextFormatter;
+pub mod filler_removal;
+pub mod formatter;
+pub mod self_correction;
+
+pub use filler_removal::FillerWords;
+pub use formatter::TextFormatter;
+pub use self_correction::SelfCorrectionDetector;
 
 /// Text processing pipeline
 pub struct TextProcessingPipeline {

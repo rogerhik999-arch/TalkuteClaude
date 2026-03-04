@@ -2,7 +2,8 @@
 
 use crate::error::{Result, StorageError};
 use crate::storage::database::Database;
-use chrono::{Duration, Utc};
+use chrono::{Datelike, Duration, Utc};
+use uuid::Uuid;
 
 /// Usage quota service
 pub struct UsageQuotaService {
@@ -57,14 +58,39 @@ impl UsageQuotaService {
             return Ok(quota);
         }
 
-        self.create(device_id)
+        self.create_new(device_id)
+    }
+
+    /// Create a new quota for a device
+    fn create_new(&self, device_id: &str) -> Result<UsageQuota> {
+        let quota = UsageQuota::new(Uuid::new_v4().to_string(), device_id.to_string());
+        let conn = self.db.connection();
+
+        conn.execute(
+            "INSERT INTO usage_quotas (
+                quota_id, device_id, current_week_start,
+                words_used_this_week, weekly_limit, last_reset_at, total_words_all_time
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+            rusqlite::params![
+                quota.quota_id,
+                quota.device_id,
+                quota.current_week_start,
+                quota.words_used_this_week,
+                quota.weekly_limit,
+                quota.last_reset_at,
+                quota.total_words_all_time,
+            ],
+        )
+        .map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+
+        Ok(quota)
     }
 
     /// Check if quota should be reset (new week)
     fn should_reset(&self, quota: &UsageQuota) -> bool {
         let current_week_start = chrono::NaiveDate::parse_from_str(&quota.current_week_start, "%Y-%m-%d")
-            .unwrap_or_default();
-        let today = Utc::now().naive_utc().date();
+            .unwrap_or_else(|_| chrono::NaiveDate::from_ymd_opt(2024, 1, 1).unwrap());
+        let today = Utc::now().date_naive();
 
         // Reset on Monday (.weekday().num_days_from_monday() == 0)
         today >= current_week_start + Duration::days(7)
@@ -78,7 +104,10 @@ impl UsageQuotaService {
             .unwrap_or_else(|| UsageQuota::new(Uuid::new_v4().to_string(), device_id.to_string()));
 
         let now = Utc::now();
-        let week_start = now.naive_utc().date().monday();
+        let today = now.date_naive();
+        // Get Monday of current week
+        let weekday = today.weekday().num_days_from_monday() as i64;
+        let week_start = today - Duration::days(weekday);
 
         let conn = self.db.connection();
 
@@ -155,7 +184,11 @@ pub struct QuotaInfo {
 impl UsageQuota {
     fn new(quota_id: String, device_id: String) -> Self {
         let now = Utc::now();
-        let week_start = now.naive_utc().date().monday();
+        let today = now.date_naive();
+        // Get Monday of current week
+        let weekday = today.weekday().num_days_from_monday() as i64;
+        let week_start = today - Duration::days(weekday);
+
         Self {
             quota_id,
             device_id,

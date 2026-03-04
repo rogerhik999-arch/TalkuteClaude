@@ -101,6 +101,21 @@ impl AIPrompts {
     pub fn format(&self, prompt: &str, input: &str) -> String {
         prompt.replace("{input}", input)
     }
+
+    /// Get the default polishing prompt
+    pub fn default_polishing(&self) -> String {
+        self.default_polish.clone()
+    }
+
+    /// Get a translation prompt for the target language
+    pub fn translation(&self, target_language: &str) -> String {
+        format!(
+            "Translate the following text to {}. Preserve the tone and meaning. \
+             Present only the translated text without any additional commentary.\
+             \n\nText:\n\"{{input}}\"",
+            target_language
+        )
+    }
 }
 
 impl Default for AIPrompts {

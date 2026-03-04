@@ -1,3 +1,4 @@
 // Quota module
 pub mod tracker;
-pub mod mod;
+
+pub use tracker::UsageQuotaService;

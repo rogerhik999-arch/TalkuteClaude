@@ -49,10 +49,10 @@ impl DeviceProfileService {
                     last_active_at: row.get(2)?,
                     preferred_language: row.get(3)?,
                     voice_speed_preference: row.get(4)?,
-                    auto_punctuation_enabled: row.get(5)? != 0,
-                    filler_removal_enabled: row.get(6)? != 0,
-                    self_correction_enabled: row.get(7)? != 0,
-                    crash_reporting_enabled: row.get(8)? != 0,
+                    auto_punctuation_enabled: row.get::<_, i32>(5)? != 0,
+                    filler_removal_enabled: row.get::<_, i32>(6)? != 0,
+                    self_correction_enabled: row.get::<_, i32>(7)? != 0,
+                    crash_reporting_enabled: row.get::<_, i32>(8)? != 0,
                 })
             },
         ).ok();

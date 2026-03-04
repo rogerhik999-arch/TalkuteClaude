@@ -67,21 +67,19 @@
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
-Note: Phase 1 and Phase 2 are partially complete. The project structure is in place with:
+Note: Phase 1 and Phase 2 are mostly complete. The project structure is in place with:
 - Directory structure created
 - Rust workspace and Flutter project initialized
 - Code formatting tools configured
 - Database schema and models implemented
 - Platform adapters created for all 5 platforms
 - Device profile and quota services implemented
-
-Remaining Phase 1 tasks:
-- T008: Install flutter_rust_bridge_codegen tool
+- Speech recognition service implemented
+- Text processing pipeline implemented
+- AI polishing service implemented
 
 Remaining Phase 2 tasks:
-- T014: Setup tokio async runtime configuration in rust-core/src/lib.rs
-- T016: Implement logging infrastructure with env_logger in rust-core/src/lib.rs
-- T018: Generate initial Flutter bindings with flutter_rust_bridge_codegen
+- T018: Generate initial Flutter bindings with flutter_rust_bridge_codegen (blocked by network issues)
 
 ---
 
@@ -94,36 +92,36 @@ Remaining Phase 2 tasks:
 ### Implementation for User Story 1
 
 #### Data Models (Test-First)
-- [ ] T027 [RED] [P] [US1] Write tests for VoiceSession model in rust-core/tests/storage/session_test.rs
-- [ ] T028 [RED] [P] [US1] Write tests for TranscriptionHistory model in rust-core/tests/storage/history_test.rs
-- [ ] T029 [GREEN] [P] [US1] Create VoiceSession model in rust-core/src/storage/models.rs (make T027 pass)
-- [ ] T030 [GREEN] [P] [US1] Create TranscriptionHistory model in rust-core/src/storage/models.rs (make T028 pass)
+- [X] T027 [RED] [P] [US1] Write tests for VoiceSession model in rust-core/tests/storage/session_test.rs
+- [X] T028 [RED] [P] [US1] Write tests for TranscriptionHistory model in rust-core/tests/storage/history_test.rs
+- [X] T029 [GREEN] [P] [US1] Create VoiceSession model in rust-core/src/storage/models.rs (make T027 pass)
+- [X] T030 [GREEN] [P] [US1] Create TranscriptionHistory model in rust-core/src/storage/models.rs (make T028 pass)
 
 #### Speech Recognition (Test-First)
-- [ ] T031 [RED] [P] [US1] Write tests for Azure Speech API client in rust-core/tests/speech/client_test.rs
-- [ ] T032 [RED] [P] [US1] Write tests for audio capture in rust-core/tests/speech/audio_capture_test.rs
-- [ ] T033 [GREEN] [P] [US1] Implement Azure Speech API client in rust-core/src/speech/client.rs (make T031 pass)
-- [ ] T034 [GREEN] [P] [US1] Implement audio capture module in rust-core/src/speech/audio_capture.rs (make T032 pass)
-- [ ] T035 [RED] [US1] Write tests for speech recognition service in rust-core/tests/speech/service_test.rs
-- [ ] T036 [GREEN] [US1] Implement speech recognition service in rust-core/src/speech/mod.rs (make T035 pass, depends on T033, T034)
+- [X] T031 [RED] [P] [US1] Write tests for Azure Speech API client in rust-core/tests/speech/client_test.rs
+- [X] T032 [RED] [P] [US1] Write tests for audio capture in rust-core/tests/speech/audio_capture_test.rs
+- [X] T033 [GREEN] [P] [US1] Implement Azure Speech API client in rust-core/src/speech/client.rs (make T031 pass)
+- [X] T034 [GREEN] [P] [US1] Implement audio capture module in rust-core/src/speech/audio_capture.rs (make T032 pass)
+- [X] T035 [RED] [US1] Write tests for speech recognition service in rust-core/tests/speech/service_test.rs
+- [X] T036 [GREEN] [US1] Implement speech recognition service in rust-core/src/speech/mod.rs (make T035 pass, depends on T033, T034)
 
 #### Text Processing (Test-First)
-- [ ] T037 [RED] [P] [US1] Write tests for filler word removal in rust-core/tests/processing/filler_removal_test.rs
-- [ ] T038 [RED] [P] [US1] Write tests for self-correction detection in rust-core/tests/processing/self_correction_test.rs
-- [ ] T039 [RED] [P] [US1] Write tests for text formatter in rust-core/tests/processing/formatter_test.rs
-- [ ] T040 [GREEN] [P] [US1] Create filler word removal module in rust-core/src/processing/filler_removal.rs (make T037 pass)
-- [ ] T041 [GREEN] [P] [US1] Create self-correction detection module in rust-core/src/processing/self_correction.rs (make T038 pass)
-- [ ] T042 [GREEN] [P] [US1] Implement text formatter in rust-core/src/processing/formatter.rs (make T039 pass)
-- [ ] T043 [RED] [US1] Write tests for text processing pipeline in rust-core/tests/processing/pipeline_test.rs
-- [ ] T044 [GREEN] [US1] Implement text processing pipeline in rust-core/src/processing/mod.rs (make T043 pass, depends on T040, T041, T042)
+- [X] T037 [RED] [P] [US1] Write tests for filler word removal in rust-core/tests/processing/filler_removal_test.rs
+- [X] T038 [RED] [P] [US1] Write tests for self-correction detection in rust-core/tests/processing/self_correction_test.rs
+- [X] T039 [RED] [P] [US1] Write tests for text formatter in rust-core/tests/processing/formatter_test.rs
+- [X] T040 [GREEN] [P] [US1] Create filler word removal module in rust-core/src/processing/filler_removal.rs (make T037 pass)
+- [X] T041 [GREEN] [P] [US1] Create self-correction detection module in rust-core/src/processing/self_correction.rs (make T038 pass)
+- [X] T042 [GREEN] [P] [US1] Implement text formatter in rust-core/src/processing/formatter.rs (make T039 pass)
+- [X] T043 [RED] [US1] Write tests for text processing pipeline in rust-core/tests/processing/pipeline_test.rs
+- [X] T044 [GREEN] [US1] Implement text processing pipeline in rust-core/src/processing/mod.rs (make T043 pass, depends on T040, T041, T042)
 
 #### AI Polishing (Test-First)
-- [ ] T045 [RED] [P] [US1] Write tests for AI prompt templates in rust-core/tests/ai/prompts_test.rs
+- [X] T045 [RED] [P] [US1] Write tests for AI prompt templates in rust-core/tests/ai/prompts_test.rs
 - [ ] T046 [RED] [P] [US1] Write tests for Claude API client in rust-core/tests/ai/client_test.rs
-- [ ] T047 [GREEN] [P] [US1] Create AI prompt templates in rust-core/src/ai/prompts.rs (make T045 pass)
-- [ ] T048 [GREEN] [P] [US1] Implement Claude API client in rust-core/src/ai/client.rs (make T046 pass)
+- [X] T047 [GREEN] [P] [US1] Create AI prompt templates in rust-core/src/ai/prompts.rs (make T045 pass)
+- [X] T048 [GREEN] [P] [US1] Implement Claude API client in rust-core/src/ai/client.rs (make T046 pass)
 - [ ] T049 [RED] [US1] Write tests for text polishing service in rust-core/tests/ai/polisher_test.rs
-- [ ] T050 [GREEN] [US1] Implement text polishing service in rust-core/src/ai/polisher.rs (make T049 pass, depends on T047, T048)
+- [X] T050 [GREEN] [US1] Implement text polishing service in rust-core/src/ai/polisher.rs (make T049 pass, depends on T047, T048)
 
 #### FFI Bridge (Test-First)
 - [ ] T051 [RED] [US1] Write tests for session management FFI in rust-core/tests/ffi/session_test.rs

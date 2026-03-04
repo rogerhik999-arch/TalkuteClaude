@@ -84,7 +84,16 @@ pub enum AiServiceError {
     Timeout,
     #[error("AI service unavailable")]
     ServiceUnavailable,
+    #[error("API request failed: {0}")]
+    RequestFailed(String),
+    #[error("API authentication failed")]
+    AuthenticationFailed,
+    #[error("Invalid response from API")]
+    InvalidResponse,
 }
+
+/// Type alias for AI errors (used by client modules)
+pub type AIError = AiServiceError;
 
 /// Storage error types
 #[derive(Error, Debug)]

@@ -1,7 +1,7 @@
 //! Database connection module
 
 use crate::error::{Result, StorageError};
-use rusqlite::{Connection, params};
+use rusqlite::Connection;
 use std::path::Path;
 
 /// Database connection wrapper
@@ -11,9 +11,19 @@ pub struct Database {
 
 impl Database {
     /// Open or create a new database at the specified path
-    pub fn open(path: &str) -> Result<Self> {
-        let conn = Connection::open(path)
-            .map_err(|e| StorageError::ConnectionFailed)?;
+    pub fn open(path: impl AsRef<Path>) -> Result<Self> {
+        let conn = Connection::open(path.as_ref())
+            .map_err(|_| StorageError::ConnectionFailed)?;
+
+        let db = Self { conn };
+        db.init()?;
+        Ok(db)
+    }
+
+    /// Open or create an in-memory database (for testing)
+    pub fn in_memory() -> Result<Self> {
+        let conn = Connection::open_in_memory()
+            .map_err(|_| StorageError::ConnectionFailed)?;
 
         let db = Self { conn };
         db.init()?;
@@ -36,59 +46,19 @@ impl Database {
         &self.conn
     }
 
-    /// Execute a statement with parameters
-    pub fn execute<'a>(&self, sql: &str, params: &'a [(&'a str, &'a dyn ToSql)]) -> Result<u64> {
-        self.conn.execute(sql, params)
-            .map_err(|e| StorageError::QueryFailed(e.to_string()))
+    /// Get a mutable reference to the underlying connection
+    pub fn connection_mut(&mut self) -> &mut Connection {
+        &mut self.conn
     }
 }
 
-/// Trait for values that can be converted to SQL parameters
-pub trait ToSql {
-    fn to_sql(&self) -> rusqlite::types::Value;
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-impl ToSql for String {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        rusqlite::types::Value::Text(self.clone())
-    }
-}
-
-impl ToSql for &str {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        rusqlite::types::Value::Text(self.to_string())
-    }
-}
-
-impl ToSql for i32 {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        rusqlite::types::Value::Integer(*self as i64)
-    }
-}
-
-impl ToSql for i64 {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        rusqlite::types::Value::Integer(*self)
-    }
-}
-
-impl ToSql for f64 {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        rusqlite::types::Value::Real(*self)
-    }
-}
-
-impl ToSql for bool {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        rusqlite::types::Value::Integer(if *self { 1 } else { 0 })
-    }
-}
-
-impl<T: ToSql> ToSql for Option<T> {
-    fn to_sql(&self) -> rusqlite::types::Value {
-        match self {
-            Some(v) => v.to_sql(),
-            None => rusqlite::types::Value::Null,
-        }
+    #[test]
+    fn test_in_memory_database() {
+        let db = Database::in_memory();
+        assert!(db.is_ok());
     }
 }

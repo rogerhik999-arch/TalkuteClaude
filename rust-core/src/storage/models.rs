@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, Datelike, Duration};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeviceProfile {
@@ -182,7 +182,10 @@ impl UsageQuota {
     pub fn new(quota_id: String, device_id: String) -> Self {
         let now = Utc::now();
         // Calculate week start (Monday)
-        let week_start = now.naive_utc().date().monday();
+        let today = now.date_naive();
+        let weekday = today.weekday().num_days_from_monday() as i64;
+        let week_start = today - Duration::days(weekday);
+
         Self {
             quota_id,
             device_id,
