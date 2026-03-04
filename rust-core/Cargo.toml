@@ -50,3 +50,20 @@ levenshtein = "1.0"
 
 [dev-dependencies]
 tokio-test = "0.4"
+
+# Integration tests
+[[test]]
+name = "ffi_session_test"
+path = "tests/ffi/session_test.rs"
+
+[[test]]
+name = "ffi_transcription_test"
+path = "tests/ffi/transcription_test.rs"
+
+[[test]]
+name = "ai_client_test"
+path = "tests/ai/client_test.rs"
+
+[[test]]
+name = "ai_polisher_test"
+path = "tests/ai/polisher_test.rs"

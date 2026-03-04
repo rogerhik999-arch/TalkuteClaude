@@ -117,15 +117,15 @@ Remaining Phase 2 tasks:
 
 #### AI Polishing (Test-First)
 - [X] T045 [RED] [P] [US1] Write tests for AI prompt templates in rust-core/tests/ai/prompts_test.rs
-- [ ] T046 [RED] [P] [US1] Write tests for Claude API client in rust-core/tests/ai/client_test.rs
+- [X] T046 [RED] [P] [US1] Write tests for Claude API client in rust-core/tests/ai/client_test.rs
 - [X] T047 [GREEN] [P] [US1] Create AI prompt templates in rust-core/src/ai/prompts.rs (make T045 pass)
 - [X] T048 [GREEN] [P] [US1] Implement Claude API client in rust-core/src/ai/client.rs (make T046 pass)
-- [ ] T049 [RED] [US1] Write tests for text polishing service in rust-core/tests/ai/polisher_test.rs
+- [X] T049 [RED] [US1] Write tests for text polishing service in rust-core/tests/ai/polisher_test.rs
 - [X] T050 [GREEN] [US1] Implement text polishing service in rust-core/src/ai/polisher.rs (make T049 pass, depends on T047, T048)
 
 #### FFI Bridge (Test-First)
-- [ ] T051 [RED] [US1] Write tests for session management FFI in rust-core/tests/ffi/session_test.rs
-- [ ] T052 [RED] [US1] Write tests for transcription FFI in rust-core/tests/ffi/transcription_test.rs
+- [X] T051 [RED] [US1] Write tests for session management FFI in rust-core/tests/ffi/session_test.rs
+- [X] T052 [RED] [US1] Write tests for transcription FFI in rust-core/tests/ffi/transcription_test.rs
 - [X] T053 [GREEN] [US1] Create session management FFI functions in rust-core/src/ffi/bridge.rs (start_voice_session, stop_voice_session, cancel_voice_session, make T051 pass)
 - [X] T054 [GREEN] [US1] Create transcription FFI functions in rust-core/src/ffi/bridge.rs (transcribe_audio, polish_text, make T052 pass)
 - [ ] T055 [GREEN] [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
