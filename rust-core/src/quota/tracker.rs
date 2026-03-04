@@ -5,9 +5,120 @@ use crate::storage::database::Database;
 use chrono::{Datelike, Duration, Utc};
 use uuid::Uuid;
 
+/// Default weekly word limit
+pub const WEEKLY_LIMIT: i32 = 4000;
+
+/// Warning threshold percentage (80%)
+pub const WARNING_THRESHOLD_PERCENTAGE: f64 = 80.0;
+
 /// Usage quota service
 pub struct UsageQuotaService {
     db: Database,
+}
+
+/// Quota tracker for simplified quota operations
+pub struct QuotaTracker {
+    db: Database,
+    device_id: String,
+}
+
+impl QuotaTracker {
+    /// Create a new quota tracker
+    pub fn new(db: Database) -> Result<Self> {
+        Ok(Self {
+            db,
+            device_id: "default".to_string(),
+        })
+    }
+
+    /// Check if quota is available for the given word count
+    pub async fn check_quota(&self, words_needed: i32) -> Result<bool> {
+        let usage = self.get_weekly_usage().await?;
+        Ok(usage + words_needed <= WEEKLY_LIMIT)
+    }
+
+    /// Get the current weekly usage
+    pub async fn get_weekly_usage(&self) -> Result<i32> {
+        let conn = self.db.connection();
+        let usage = conn.query_row(
+            "SELECT COALESCE(SUM(words_used_this_week), 0) FROM usage_quotas WHERE device_id = ?1",
+            [&self.device_id],
+            |row| row.get::<_, i32>(0),
+        ).unwrap_or(0);
+        Ok(usage)
+    }
+
+    /// Add words to the quota usage
+    pub async fn add_words(&self, word_count: i32) -> Result<()> {
+        // Ensure device profile exists first (for foreign key constraint)
+        let conn = self.db.connection();
+        conn.execute(
+            "INSERT OR IGNORE INTO device_profiles (device_id, created_at, last_active_at)
+             VALUES (?1, datetime('now'), datetime('now'))",
+            [&self.device_id],
+        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+
+        // Check if quota entry exists
+        let exists: bool = conn.query_row(
+            "SELECT COUNT(*) > 0 FROM usage_quotas WHERE device_id = ?1",
+            [&self.device_id],
+            |row| row.get(0),
+        ).unwrap_or(false);
+
+        if !exists {
+            let now = Utc::now();
+            let today = now.date_naive();
+            let weekday = today.weekday().num_days_from_monday() as i64;
+            let week_start = today - Duration::days(weekday);
+
+            conn.execute(
+                "INSERT INTO usage_quotas (
+                    quota_id, device_id, current_week_start,
+                    words_used_this_week, weekly_limit, last_reset_at, total_words_all_time
+                ) VALUES (?1, ?2, ?3, 0, ?4, ?5, 0)",
+                rusqlite::params![
+                    uuid::Uuid::new_v4().to_string(),
+                    self.device_id,
+                    week_start.to_string(),
+                    WEEKLY_LIMIT,
+                    now.to_rfc3339(),
+                ],
+            ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        }
+
+        conn.execute(
+            "UPDATE usage_quotas SET
+                words_used_this_week = words_used_this_week + ?1,
+                total_words_all_time = total_words_all_time + ?1
+             WHERE device_id = ?2",
+            rusqlite::params![word_count, self.device_id],
+        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+
+        Ok(())
+    }
+
+    /// Get the remaining quota for this week
+    pub async fn get_remaining_quota(&self) -> Result<i32> {
+        let usage = self.get_weekly_usage().await?;
+        Ok((WEEKLY_LIMIT - usage).max(0))
+    }
+
+    /// Get the percentage of quota used
+    pub async fn get_percentage_used(&self) -> Result<f64> {
+        let usage = self.get_weekly_usage().await?;
+        Ok((usage as f64 / WEEKLY_LIMIT as f64) * 100.0)
+    }
+
+    /// Get the weekly limit
+    pub fn get_weekly_limit(&self) -> i32 {
+        WEEKLY_LIMIT
+    }
+
+    /// Check if usage is at warning threshold (80%+)
+    pub async fn is_at_warning_threshold(&self) -> Result<bool> {
+        let percentage = self.get_percentage_used().await?;
+        Ok(percentage >= WARNING_THRESHOLD_PERCENTAGE)
+    }
 }
 
 impl UsageQuotaService {

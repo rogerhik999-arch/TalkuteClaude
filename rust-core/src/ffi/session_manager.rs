@@ -2,12 +2,16 @@
 
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
 
 use crate::error::{Error, Result};
 use super::bridge::{SessionStatus, VoiceSessionInfo};
+
+/// Maximum session duration (5 minutes)
+pub const MAX_SESSION_DURATION: Duration = Duration::from_secs(300);
 
 /// Internal session state
 #[derive(Debug, Clone)]
@@ -20,6 +24,7 @@ pub struct Session {
     pub raw_transcription: String,
     pub polished_text: String,
     pub word_count: i32,
+    pub max_duration: Duration,
 }
 
 impl Session {
@@ -33,7 +38,21 @@ impl Session {
             raw_transcription: String::new(),
             polished_text: String::new(),
             word_count: 0,
+            max_duration: MAX_SESSION_DURATION,
         }
+    }
+
+    /// Get the duration of the session
+    pub fn duration(&self) -> Duration {
+        let now = Utc::now();
+        let diff = now - self.started_at;
+        // Convert to milliseconds for more precise duration
+        Duration::from_millis(diff.num_milliseconds().max(0) as u64)
+    }
+
+    /// Check if the session has timed out
+    pub fn is_timed_out(&self, timeout: Duration) -> bool {
+        self.duration() > timeout
     }
 
     pub fn to_info(&self) -> VoiceSessionInfo {
@@ -153,5 +172,16 @@ impl SessionManager {
     pub async fn get_all_sessions(&self) -> Vec<VoiceSessionInfo> {
         let sessions = self.sessions.read().await;
         sessions.values().map(|s| s.to_info()).collect()
+    }
+
+    /// Update a session
+    pub async fn update_session(&self, session_id: &str, session: Session) -> Result<()> {
+        let mut sessions = self.sessions.write().await;
+        if sessions.contains_key(session_id) {
+            sessions.insert(session_id.to_string(), session);
+            Ok(())
+        } else {
+            Err(Error::Unknown(format!("Session not found: {}", session_id)))
+        }
     }
 }

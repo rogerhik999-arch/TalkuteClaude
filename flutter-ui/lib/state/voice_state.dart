@@ -42,6 +42,7 @@ class VoiceState {
     String? polishedText,
     double? audioLevel,
     String? errorMessage,
+    bool clearErrorMessage = false,
     int? wordCount,
   }) {
     return VoiceState(
@@ -50,7 +51,7 @@ class VoiceState {
       rawTranscription: rawTranscription ?? this.rawTranscription,
       polishedText: polishedText ?? this.polishedText,
       audioLevel: audioLevel ?? this.audioLevel,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
       wordCount: wordCount ?? this.wordCount,
     );
   }
@@ -75,7 +76,7 @@ class VoiceStateNotifier extends StateNotifier<VoiceState> {
       sessionId: sessionId,
       rawTranscription: '',
       polishedText: '',
-      errorMessage: null,
+      clearErrorMessage: true,
     );
   }
 

@@ -131,24 +131,24 @@ Remaining Phase 2 tasks:
 - [ ] T055 [GREEN] [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
 
 #### Flutter UI (Test-First)
-- [ ] T056 [RED] [P] [US1] Write widget tests for voice button in flutter-ui/test/widgets/voice_button_test.dart
-- [ ] T057 [RED] [P] [US1] Write widget tests for transcription preview in flutter-ui/test/widgets/transcription_preview_test.dart
+- [X] T056 [RED] [P] [US1] Write widget tests for voice button in flutter-ui/test/widgets/voice_button_test.dart
+- [X] T057 [RED] [P] [US1] Write widget tests for transcription preview in flutter-ui/test/widgets/transcription_preview_test.dart
 - [X] T058 [GREEN] [P] [US1] Create VoiceSession Dart model in flutter-ui/lib/models/session.dart
 - [X] T059 [GREEN] [P] [US1] Implement voice state management in flutter-ui/lib/state/voice_state.dart
 - [X] T060 [GREEN] [P] [US1] Create voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T056 pass)
 - [X] T061 [GREEN] [P] [US1] Create transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T057 pass)
-- [ ] T062 [RED] [US1] Write integration tests for home screen in flutter-ui/integration_test/home_screen_test.dart
+- [X] T062 [RED] [US1] Write integration tests for home screen in flutter-ui/integration_test/home_screen_test.dart
 - [X] T063 [GREEN] [US1] Implement home screen with voice input in flutter-ui/lib/screens/home_screen.dart (make T062 pass, depends on T060, T061)
 
 #### Additional Features (Test-First)
-- [ ] T064 [RED] [US1] Write tests for audio level visualization in flutter-ui/test/widgets/voice_button_audio_test.dart
-- [ ] T065 [GREEN] [US1] Add audio level visualization to voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T064 pass)
-- [ ] T066 [RED] [US1] Write tests for session timeout handling in rust-core/tests/ffi/timeout_test.rs
-- [ ] T067 [GREEN] [US1] Implement session timeout handling (5-minute max) in rust-core/src/ffi/bridge.rs (make T066 pass)
-- [ ] T068 [RED] [US1] Write tests for error handling in flutter-ui/test/screens/home_screen_error_test.dart
-- [ ] T069 [GREEN] [US1] Add error handling and user feedback for API failures in flutter-ui/lib/screens/home_screen.dart (make T068 pass)
-- [ ] T070 [RED] [US1] Write tests for usage quota checking in rust-core/tests/quota/check_test.rs
-- [ ] T071 [GREEN] [US1] Integrate usage quota checking before session start in rust-core/src/ffi/bridge.rs (make T070 pass)
+- [X] T064 [RED] [US1] Write tests for audio level visualization in flutter-ui/test/widgets/voice_button_audio_test.dart
+- [X] T065 [GREEN] [US1] Add audio level visualization to voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T064 pass)
+- [X] T066 [RED] [US1] Write tests for session timeout handling in rust-core/tests/ffi/timeout_test.rs
+- [X] T067 [GREEN] [US1] Implement session timeout handling (5-minute max) in rust-core/src/ffi/bridge.rs (make T066 pass)
+- [X] T068 [RED] [US1] Write tests for error handling in flutter-ui/test/screens/home_screen_error_test.dart
+- [X] T069 [GREEN] [US1] Add error handling and user feedback for API failures in flutter-ui/lib/screens/home_screen.dart (make T068 pass)
+- [X] T070 [RED] [US1] Write tests for usage quota checking in rust-core/tests/quota/check_test.rs
+- [X] T071 [GREEN] [US1] Integrate usage quota checking before session start in rust-core/src/ffi/bridge.rs (make T070 pass)
 
 #### Refactoring & Optimization
 - [ ] T072 [IMPROVE] [US1] Refactor speech recognition module for clarity and performance

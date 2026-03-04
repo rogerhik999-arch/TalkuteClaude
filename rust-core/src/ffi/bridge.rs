@@ -25,6 +25,7 @@ pub enum SessionStatus {
     Completed,
     Failed,
     Cancelled,
+    Stopped,
 }
 
 impl Default for SessionStatus {

@@ -67,3 +67,11 @@ path = "tests/ai/client_test.rs"
 [[test]]
 name = "ai_polisher_test"
 path = "tests/ai/polisher_test.rs"
+
+[[test]]
+name = "ffi_timeout_test"
+path = "tests/ffi/timeout_test.rs"
+
+[[test]]
+name = "quota_check_test"
+path = "tests/quota/check_test.rs"
