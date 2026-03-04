@@ -126,8 +126,8 @@ Remaining Phase 2 tasks:
 #### FFI Bridge (Test-First)
 - [ ] T051 [RED] [US1] Write tests for session management FFI in rust-core/tests/ffi/session_test.rs
 - [ ] T052 [RED] [US1] Write tests for transcription FFI in rust-core/tests/ffi/transcription_test.rs
-- [ ] T053 [GREEN] [US1] Create session management FFI functions in rust-core/src/ffi/bridge.rs (start_voice_session, stop_voice_session, cancel_voice_session, make T051 pass)
-- [ ] T054 [GREEN] [US1] Create transcription FFI functions in rust-core/src/ffi/bridge.rs (transcribe_audio, polish_text, make T052 pass)
+- [X] T053 [GREEN] [US1] Create session management FFI functions in rust-core/src/ffi/bridge.rs (start_voice_session, stop_voice_session, cancel_voice_session, make T051 pass)
+- [X] T054 [GREEN] [US1] Create transcription FFI functions in rust-core/src/ffi/bridge.rs (transcribe_audio, polish_text, make T052 pass)
 - [ ] T055 [GREEN] [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
 
 #### Flutter UI (Test-First)
