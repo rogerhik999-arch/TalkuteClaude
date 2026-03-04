@@ -133,12 +133,12 @@ Remaining Phase 2 tasks:
 #### Flutter UI (Test-First)
 - [ ] T056 [RED] [P] [US1] Write widget tests for voice button in flutter-ui/test/widgets/voice_button_test.dart
 - [ ] T057 [RED] [P] [US1] Write widget tests for transcription preview in flutter-ui/test/widgets/transcription_preview_test.dart
-- [ ] T058 [GREEN] [P] [US1] Create VoiceSession Dart model in flutter-ui/lib/models/session.dart
-- [ ] T059 [GREEN] [P] [US1] Implement voice state management in flutter-ui/lib/state/voice_state.dart
-- [ ] T060 [GREEN] [P] [US1] Create voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T056 pass)
-- [ ] T061 [GREEN] [P] [US1] Create transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T057 pass)
+- [X] T058 [GREEN] [P] [US1] Create VoiceSession Dart model in flutter-ui/lib/models/session.dart
+- [X] T059 [GREEN] [P] [US1] Implement voice state management in flutter-ui/lib/state/voice_state.dart
+- [X] T060 [GREEN] [P] [US1] Create voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T056 pass)
+- [X] T061 [GREEN] [P] [US1] Create transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T057 pass)
 - [ ] T062 [RED] [US1] Write integration tests for home screen in flutter-ui/integration_test/home_screen_test.dart
-- [ ] T063 [GREEN] [US1] Implement home screen with voice input in flutter-ui/lib/screens/home_screen.dart (make T062 pass, depends on T060, T061)
+- [X] T063 [GREEN] [US1] Implement home screen with voice input in flutter-ui/lib/screens/home_screen.dart (make T062 pass, depends on T060, T061)
 
 #### Additional Features (Test-First)
 - [ ] T064 [RED] [US1] Write tests for audio level visualization in flutter-ui/test/widgets/voice_button_audio_test.dart
