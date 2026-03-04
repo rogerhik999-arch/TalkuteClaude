@@ -1,0 +1,84 @@
+# Rust - Build artifacts
+/target/
+debug/
+release/
+*.rs.bk
+*.rlib
+*.prof*
+/target/
+
+# Cargo - Lock file and backup
+Cargo.lock
+**/*.cargo/config
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env*
+!.env.template
+.env.local
+.env.*.local
+
+# Log files
+*.log
+logs/
+
+# Flutter - Build and cache
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+web/
+iproxy/
+*.pyc
+__pycache__/
+
+# Dart - Analysis
+.dart_tool/
+build/
+
+# Test coverage
+coverage/
+
+# Xcode / iOS
+*.pbxuser
+*.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+DerivedData/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+
+# Android
+*.iml
+*.local
+local.properties
+/.gradle/
+/build/
+/app/src/main/generated/
+协助文件/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
