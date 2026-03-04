@@ -36,7 +36,7 @@
 - [X] T005 [P] Configure Dart formatting in flutter-ui/analysis_options.yaml
 - [X] T006 Create .env.template file with required API keys (AZURE_SPEECH_KEY, ANTHROPIC_API_KEY)
 - [X] T007 [P] Add .env to .gitignore
-- [ ] T008 Install flutter_rust_bridge_codegen tool via cargo install
+- [X] T008 Install flutter_rust_bridge_codegen tool via cargo install
 
 ---
 
@@ -51,9 +51,9 @@
 - [X] T011 [P] Create DeviceProfile model in rust-core/src/storage/models.rs
 - [X] T012 [P] Create UsageQuota model in rust-core/src/storage/models.rs
 - [X] T013 Implement database migration runner in rust-core/src/storage/migrations.rs
-- [ ] T014 [P] Setup tokio async runtime configuration in rust-core/src/lib.rs
+- [X] T014 [P] Setup tokio async runtime configuration in rust-core/src/lib.rs
 - [X] T015 [P] Create error types module in rust-core/src/error.rs
-- [ ] T016 [P] Implement logging infrastructure with env_logger in rust-core/src/lib.rs
+- [X] T016 [P] Implement logging infrastructure with env_logger in rust-core/src/lib.rs
 - [X] T017 Create FFI bridge skeleton in rust-core/src/ffi/bridge.rs
 - [ ] T018 Generate initial Flutter bindings with flutter_rust_bridge_codegen
 - [X] T019 [P] Create Flutter app state management structure with Riverpod in flutter-ui/lib/state/app_state.dart

@@ -39,3 +39,12 @@ flutter_rust_bridge = "2.11"
 
 # Error handling
 thiserror = "1.0"
+
+# Static runtime initialization
+once_cell = "1.19"
+
+# Text processing
+regex = "1.10"
+
+# Self-correction detection
+levenshtein = "1.0"

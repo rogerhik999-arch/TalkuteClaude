@@ -16,12 +16,15 @@
 //! - `storage`: Local SQLite database
 //! - `error`: Error types and handling
 
-// Async runtime
+// Async runtime with tokio
 pub use tokio;
+use tokio::runtime::Builder;
 
 // Logging infrastructure
 pub use env_logger;
 pub use log;
+pub mod logging;
+pub use logging::{init_logging, info, warn, error, debug, trace};
 
 // Public API
 pub mod ai;
@@ -36,8 +39,31 @@ pub mod storage;
 // Re-export common types
 pub use error::{Error, Result};
 
-// Initialize logging when the library is loaded
-#[Initializer]
-pub fn init_logging() {
-    env_logger::init();
+/// Get the global async runtime
+///
+/// This creates a multi-threaded runtime optimized for I/O-bound operations.
+/// Use for async FFI functions that need to spawn tasks.
+pub fn get_runtime() -> &'static tokio::runtime::Runtime {
+    static_runtime::get()
 }
+
+/// Static runtime initialization using once_cell
+mod static_runtime {
+    use super::Builder;
+    use once_cell::sync::Lazy;
+    use tokio::runtime::Runtime;
+
+    pub static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
+        Builder::new_multi_thread()
+            .worker_threads(4)
+            .thread_name("talkute-worker")
+            .enable_all()
+            .build()
+            .expect("Failed to create tokio runtime")
+    });
+
+    pub fn get() -> &'static Runtime {
+        &RUNTIME
+    }
+}
+
