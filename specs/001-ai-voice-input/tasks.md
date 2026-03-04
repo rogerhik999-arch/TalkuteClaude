@@ -224,19 +224,51 @@ Remaining Phase 2 tasks:
 
 ### Implementation for User Story 3
 
-- [ ] T066 [P] [US3] Create PersonalDictionaryEntry model in rust-core/src/storage/models.rs
-- [ ] T067 [P] [US3] Implement dictionary storage operations in rust-core/src/storage/dictionary.rs
-- [ ] T068 [US3] Implement dictionary application logic in rust-core/src/processing/dictionary.rs
-- [ ] T069 [US3] Update text processing pipeline to apply dictionary in rust-core/src/processing/mod.rs
-- [ ] T070 [US3] Create dictionary management FFI functions in rust-core/src/ffi/bridge.rs (add_dictionary_entry, remove_dictionary_entry, get_all_dictionary_entries, update_dictionary_entry)
-- [ ] T071 [US3] Regenerate Flutter bindings with flutter_rust_bridge_codegen
-- [ ] T072 [P] [US3] Create PersonalDictionaryEntry Dart model in flutter-ui/lib/models/dictionary.dart
-- [ ] T073 [P] [US3] Create dictionary screen UI in flutter-ui/lib/screens/dictionary_screen.dart
-- [ ] T074 [US3] Implement add dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart
-- [ ] T075 [US3] Implement edit dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart
-- [ ] T076 [US3] Implement delete dictionary entry confirmation in flutter-ui/lib/screens/dictionary_screen.dart
-- [ ] T077 [US3] Add dictionary import/export functionality in rust-core/src/storage/dictionary.rs
-- [ ] T078 [US3] Add navigation to dictionary screen from settings in flutter-ui/lib/screens/settings_screen.dart
+#### Data Model (Test-First)
+- [ ] T151 [RED] [P] [US3] Write tests for PersonalDictionaryEntry model in rust-core/tests/storage/dictionary_test.rs
+- [ ] T152 [GREEN] [P] [US3] Create PersonalDictionaryEntry model in rust-core/src/storage/models.rs (make T151 pass)
+
+#### Dictionary Storage (Test-First)
+- [ ] T153 [RED] [P] [US3] Write tests for dictionary storage operations in rust-core/tests/storage/dict_ops_test.rs
+- [ ] T154 [GREEN] [P] [US3] Implement dictionary storage operations in rust-core/src/storage/dictionary.rs (make T153 pass)
+
+#### Dictionary Application (Test-First)
+- [ ] T155 [RED] [P] [US3] Write tests for dictionary application logic in rust-core/tests/processing/dict_app_test.rs
+- [ ] T156 [GREEN] [US3] Implement dictionary application logic in rust-core/src/processing/dictionary.rs (make T155 pass)
+
+#### Processing Pipeline Integration (Test-First)
+- [ ] T157 [RED] [US3] Write tests for pipeline with dictionary in rust-core/tests/processing/pipeline_dict_test.rs
+- [ ] T158 [GREEN] [US3] Update text processing pipeline to apply dictionary in rust-core/src/processing/mod.rs (make T157 pass, depends on T156)
+
+#### FFI Functions (Test-First)
+- [ ] T159 [RED] [US3] Write tests for dictionary FFI in rust-core/tests/ffi/dict_test.rs
+- [ ] T160 [GREEN] [US3] Create dictionary management FFI functions in rust-core/src/ffi/bridge.rs (add_dictionary_entry, remove_dictionary_entry, get_all_dictionary_entries, update_dictionary_entry, make T159 pass)
+
+#### Flutter Binding (Test-First)
+- [ ] T161 [GREEN] [US3] Regenerate Flutter bindings with flutter_rust_bridge_codegen
+
+#### Flutter UI (Test-First)
+- [ ] T162 [GREEN] [P] [US3] Create PersonalDictionaryEntry Dart model in flutter-ui/lib/models/dictionary.dart
+- [ ] T163 [RED] [P] [US3] Write tests for dictionary screen in flutter-ui/test/screens/dictionary_screen_test.dart
+- [ ] T164 [GREEN] [P] [US3] Create dictionary screen UI in flutter-ui/lib/screens/dictionary_screen.dart (make T163 pass)
+- [ ] T165 [RED] [US3] Write tests for add dictionary entry dialog in flutter-ui/test/screens/dict_add_dialog_test.dart
+- [ ] T166 [GREEN] [US3] Implement add dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart (make T165 pass)
+- [ ] T167 [RED] [US3] Write tests for edit dictionary entry dialog in flutter-ui/test/screens/dict_edit_dialog_test.dart
+- [ ] T168 [GREEN] [US3] Implement edit dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart (make T167 pass)
+- [ ] T169 [RED] [US3] Write tests for delete confirmation in flutter-ui/test/screens/dict_delete_test.dart
+- [ ] T170 [GREEN] [US3] Implement delete dictionary entry confirmation in flutter-ui/lib/screens/dictionary_screen.dart (make T169 pass)
+
+#### Import/Export & Navigation (Test-First)
+- [ ] T171 [RED] [US3] Write tests for import/export in rust-core/tests/storage/dict_export_test.rs
+- [ ] T172 [GREEN] [US3] Add dictionary import/export functionality in rust-core/src/storage/dictionary.rs (make T171 pass)
+- [ ] T173 [RED] [US3] Write tests for settings navigation in flutter-ui/test/screens/settings_navigation_test.dart
+- [ ] T174 [GREEN] [US3] Add navigation to dictionary screen from settings in flutter-ui/lib/screens/settings_screen.dart (make T173 pass)
+
+#### Refactoring
+- [ ] T175 [IMPROVE] [US3] Refactor dictionary module for clarity and performance
+
+#### Integration Testing
+- [ ] T176 [US3] End-to-end integration test: Personal dictionary workflow (add term → speak sentence → term recognized)
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work - users can manage custom vocabulary
 
@@ -250,16 +282,38 @@ Remaining Phase 2 tasks:
 
 ### Implementation for User Story 4
 
-- [ ] T079 [P] [US4] Add multi-language support to Azure Speech API client in rust-core/src/speech/client.rs
-- [ ] T080 [P] [US4] Implement automatic language detection in rust-core/src/speech/client.rs
-- [ ] T081 [P] [US4] Add multi-language filler word lists in rust-core/src/processing/filler_removal.rs
-- [ ] T082 [P] [US4] Create translation service using Claude API in rust-core/src/ai/translator.rs
-- [ ] T083 [US4] Add translation FFI functions in rust-core/src/ffi/bridge.rs (translate_text, detect_language)
-- [ ] T084 [US4] Regenerate Flutter bindings with flutter_rust_bridge_codegen
-- [ ] T085 [P] [US4] Add language selection to device profile in flutter-ui/lib/models/settings.dart
-- [ ] T086 [P] [US4] Create language selector widget in flutter-ui/lib/widgets/language_selector.dart
-- [ ] T087 [US4] Add translation toggle to transcription preview in flutter-ui/lib/widgets/transcription_preview.dart
-- [ ] T088 [US4] Update settings screen with language preferences in flutter-ui/lib/screens/settings_screen.dart
+#### Multi-language Speech (Test-First)
+- [ ] T177 [RED] [P] [US4] Write tests for multi-language Azure Speech client in rust-core/tests/speech/multilang_test.rs
+- [ ] T178 [RED] [P] [US4] Write tests for language detection in rust-core/tests/speech/lang_detect_test.rs
+- [ ] T179 [GREEN] [P] [US4] Add multi-language support to Azure Speech API client in rust-core/src/speech/client.rs (make T177 pass)
+- [ ] T180 [GREEN] [P] [US4] Implement automatic language detection in rust-core/src/speech/client.rs (make T178 pass)
+
+#### Multi-language Processing (Test-First)
+- [ ] T181 [RED] [P] [US4] Write tests for multi-language filler word lists in rust-core/tests/processing/filler_multilang_test.rs
+- [ ] T182 [GREEN] [P] [US4] Add multi-language filler word lists in rust-core/src/processing/filler_removal.rs (make T181 pass)
+
+#### Translation Service (Test-First)
+- [ ] T183 [RED] [P] [US4] Write tests for translation service in rust-core/tests/ai/translation_test.rs
+- [ ] T184 [GREEN] [P] [US4] Create translation service using Claude API in rust-core/src/ai/translator.rs (make T183 pass)
+
+#### FFI Translation Functions (Test-First)
+- [ ] T185 [RED] [US4] Write tests for translation FFI in rust-core/tests/ffi/translation_test.rs
+- [ ] T186 [GREEN] [US4] Add translation FFI functions in rust-core/src/ffi/bridge.rs (translate_text, detect_language, make T185 pass)
+
+#### Flutter Translation UI (Test-First)
+- [ ] T187 [GREEN] [P] [US4] Create language model in flutter-ui/lib/models/language.dart
+- [ ] T188 [RED] [P] [US4] Write tests for language selector widget in flutter-ui/test/widgets/language_selector_test.dart
+- [ ] T189 [GREEN] [P] [US4] Create language selector widget in flutter-ui/lib/widgets/language_selector.dart (make T188 pass)
+- [ ] T190 [RED] [US4] Write tests for translation toggle in flutter-ui/test/widgets/translation_toggle_test.dart
+- [ ] T191 [GREEN] [US4] Add translation toggle to transcription preview in flutter-ui/lib/widgets/transcription_preview.dart (make T190 pass)
+- [ ] T192 [RED] [US4] Write tests for settings language screen in flutter-ui/test/screens/settings_language_test.dart
+- [ ] T193 [GREEN] [US4] Update settings screen with language preferences in flutter-ui/lib/screens/settings_screen.dart (make T192 pass)
+
+#### Refactoring
+- [ ] T194 [IMPROVE] [US4] Refactor translation service for Quality and error resilience
+
+#### Integration Testing
+- [ ] T195 [US4] End-to-end integration test: Multi-language workflow (select language → speak → transcribe → optional translate)
 
 **Checkpoint**: At this point, User Stories 1-4 should all work - multi-language support is functional
 
@@ -289,42 +343,42 @@ Remaining Phase 2 tasks:
 **Purpose**: Improvements that affect multiple user stories + Non-Functional Requirements validation
 
 ### Polish Tasks
-- [ ] T106 [P] Create settings screen with all preferences in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T107 [P] Implement usage quota indicator widget in flutter-ui/lib/widgets/quota_indicator.dart
-- [ ] T108 [P] Add quota warning notifications in flutter-ui/lib/screens/home_screen.dart
-- [ ] T109 [P] Implement crash reporting opt-in/opt-out in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T110 [P] Add local transcription history view in flutter-ui/lib/screens/history_screen.dart
-- [ ] T111 [P] Implement data export functionality in rust-core/src/storage/export.rs
-- [ ] T112 [P] Implement data deletion (factory reset) in rust-core/src/storage/cleanup.rs
-- [ ] T113 [P] Add keyboard shortcuts for voice activation in flutter-ui/lib/services/shortcuts.dart
-- [ ] T114 [P] Implement push-to-talk mode in flutter-ui/lib/widgets/voice_button.dart
-- [ ] T115 [P] Add microphone selection UI in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T116 [P] Implement noise cancellation toggle in rust-core/src/speech/audio_capture.rs
-- [ ] T117 [P] Add usage analytics display in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T118 [RED] Write tests for offline mode handling in rust-core/tests/network/offline_test.rs
-- [ ] T119 [GREEN] Implement offline detection and fallback logic in rust-core/src/network/offline_handler.rs (make T118 pass)
+- [ ] T196 [P] Create settings screen with all preferences in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T197 [P] Implement usage quota indicator widget in flutter-ui/lib/widgets/quota_indicator.dart
+- [ ] T198 [P] Add quota warning notifications in flutter-ui/lib/screens/home_screen.dart
+- [ ] T199 [P] Implement crash reporting opt-in/opt-out in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T200 [P] Add local transcription history view in flutter-ui/lib/screens/history_screen.dart
+- [ ] T201 [P] Implement data export functionality in rust-core/src/storage/export.rs
+- [ ] T202 [P] Implement data deletion (factory reset) in rust-core/src/storage/cleanup.rs
+- [ ] T203 [P] Add keyboard shortcuts for voice activation in flutter-ui/lib/services/shortcuts.dart
+- [ ] T204 [P] Implement push-to-talk mode in flutter-ui/lib/widgets/voice_button.dart
+- [ ] T205 [P] Add microphone selection UI in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T206 [P] Implement noise cancellation toggle in rust-core/src/speech/audio_capture.rs
+- [ ] T207 [P] Add usage analytics display in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T208 [RED] Write tests for offline mode handling in rust-core/tests/network/offline_test.rs
+- [ ] T209 [GREEN] Implement offline detection and fallback logic in rust-core/src/network/offline_handler.rs (make T208 pass)
 
 ### Non-Functional Requirements Validation (Constitution Compliance)
-- [ ] T120 [RED] Write performance benchmark tests in rust-core/tests/benchmarks/performance_test.rs
-- [ ] T121 [GREEN] Implement performance profiler in rust-core/src/tools/profiler.rs
-- [ ] T122 Run performance benchmarks and validate against constitution targets:
+- [ ] T210 [RED] Write performance benchmark tests in rust-core/tests/benchmarks/performance_test.rs
+- [ ] T211 [GREEN] Implement performance profiler in rust-core/src/tools/profiler.rs
+- [ ] T212 Run performance benchmarks and validate against constitution targets:
   - Context detection <50ms (p95)
   - Memory footprint <100MB idle, <300MB active
   - UI rendering 60fps minimum
   - CPU usage <5% idle, <30% during AI processing
-- [ ] T123 [RED] Write security audit tests in rust-core/tests/security/audit_test.rs
-- [ ] T124 Run security audit: cargo audit, FFI boundary review, prompt injection tests, encryption validation
-- [ ] T125 [RED] Write accessibility tests in flutter-ui/test/accessibility/a11y_test.rs
-- [ ] T126 Run accessibility validation: screen reader compatibility, keyboard navigation, WCAG 2.1 AA compliance
-- [ ] T127 Document NFR validation results in docs/validation-report.md
+- [ ] T213 [RED] Write security audit tests in rust-core/tests/security/audit_test.rs
+- [ ] T214 Run security audit: cargo audit, FFI boundary review, prompt injection tests, encryption validation
+- [ ] T215 [RED] Write accessibility tests in flutter-ui/test/accessibility/a11y_test.rs
+- [ ] T216 Run accessibility validation: screen reader compatibility, keyboard navigation, WCAG 2.1 AA compliance
+- [ ] T217 Document NFR validation results in docs/validation-report.md
 
 ### Code Quality & Documentation
-- [ ] T128 Code cleanup and refactoring across all modules
-- [ ] T129 Performance optimization for <200ms UI response target
-- [ ] T130 Memory optimization for <100MB idle target
-- [ ] T131 [P] Update README.md with project overview and setup instructions
-- [ ] T132 [P] Validate quickstart.md setup instructions
-- [ ] T133 Final security and privacy compliance review
+- [ ] T218 Code cleanup and refactoring across all modules
+- [ ] T219 Performance optimization for <200ms UI response target
+- [ ] T220 Memory optimization for <100MB idle target
+- [ ] T221 [P] Update README.md with project overview and setup instructions
+- [ ] T222 [P] Validate quickstart.md setup instructions
+- [ ] T223 Final security and privacy compliance review
 
 ---
 
@@ -440,30 +494,30 @@ With multiple developers:
 
 ## Task Summary
 
-**Total Tasks**: 116
-- **Phase 1 (Setup)**: 8 tasks
-- **Phase 2 (Foundational)**: 18 tasks
-- **Phase 3 (US1 - Real-time Voice to Polished Text)**: 24 tasks
-- **Phase 4 (US2 - Context-Aware Tone)**: 15 tasks
-- **Phase 5 (US3 - Personal Dictionary)**: 13 tasks
-- **Phase 6 (US4 - Multi-language Translation)**: 10 tasks
-- **Phase 7 (US5 - AI Assistant Commands)**: 10 tasks
-- **Phase 8 (Polish)**: 18 tasks
+**Total Tasks**: 223
+- **Phase 1 (Setup)**: 7 tasks (T001-T007)
+- **Phase 2 (Foundational)**: 18 tasks (T009-T026)
+- **Phase 3 (US1 - Real-time Voice to Polished Text)**: 49 tasks (T027-T075)
+- **Phase 4 (US2 - Context-Aware Tone)**: 30 tasks (T076-T105)
+- **Phase 5 (US3 - Personal Dictionary)**: 26 tasks (T151-T176)
+- **Phase 6 (US4 - Multi-language Translation)**: 19 tasks (T177-T195)
+- **Phase 7 (US5 - AI Assistant Commands)**: 0 tasks (OUT OF SCOPE)
+- **Phase 8 (Polish)**: 28 tasks (T196-T223)
 
-**Parallel Opportunities**: 67 tasks marked [P] can run in parallel within their phase
+**Parallel Opportunities**: 100+ tasks marked [P] can run in parallel within their phase
 
-**MVP Scope**: Phases 1-3 (50 tasks) deliver User Story 1 - Real-time Voice to Polished Text
+**MVP Scope**: Phases 1-3 (56 tasks) deliver User Story 1 - Real-time Voice to Polished Text
 
 **Independent Test Criteria**:
-- **US1**: User can speak naturally and receive polished text within 500ms
+- **US1**: User can speak naturally and receive polished text within 200ms (p95)
 - **US2**: Same phrase produces different tones in different applications
 - **US3**: Custom dictionary terms are recognized with 100% accuracy
 - **US4**: User can speak in multiple languages with optional translation
-- **US5**: Voice commands transform text without keyboard input
+- **US5**: Voice commands transform text without keyboard input (deferred to v2.0)
 
 ---
 
-## Notes
+## NOTES
 
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
@@ -473,4 +527,4 @@ With multiple developers:
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
 - FFI bindings must be regenerated after each Rust API change
 - Platform-specific implementations can be developed in parallel
-- Tests are NOT included per specification (TDD not explicitly requested)
+- TDD workflow: RED (write test) → GREEN (implement) → IMPROVE (refactor)
