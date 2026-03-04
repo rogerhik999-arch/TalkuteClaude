@@ -3,12 +3,16 @@
 **Input**: Design documents from `/specs/001-ai-voice-input/`
 **Prerequisites**: plan.md, spec.md, data-model.md, contracts/, research.md, quickstart.md
 
-**Tests**: Tests are NOT explicitly requested in the specification, so test tasks are EXCLUDED per template guidelines.
+**TDD Workflow**: All tasks follow Red-Green-Refactor cycle per constitution principle VI (Test-First Development)
+- **[RED]**: Write test first (expect failure)
+- **[GREEN]**: Implement minimal code to pass test
+- **[IMPROVE]**: Refactor for quality without breaking tests
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
-## Format: `[ID] [P?] [Story] Description`
+## Format: `[ID] [RED/GREEN/IMPROVE] [P?] [Story] Description`
 
+- **[RED/GREEN/IMPROVE]**: TDD phase marker (required for all implementation tasks)
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
@@ -73,30 +77,72 @@
 
 ### Implementation for User Story 1
 
-- [ ] T027 [P] [US1] Create VoiceSession model in rust-core/src/storage/models.rs
-- [ ] T028 [P] [US1] Create TranscriptionHistory model in rust-core/src/storage/models.rs
-- [ ] T029 [P] [US1] Implement Azure Speech API client in rust-core/src/speech/client.rs
-- [ ] T030 [P] [US1] Implement audio capture module in rust-core/src/speech/audio_capture.rs
-- [ ] T031 [US1] Implement speech recognition service in rust-core/src/speech/mod.rs (depends on T029, T030)
-- [ ] T032 [P] [US1] Create filler word removal module in rust-core/src/processing/filler_removal.rs
-- [ ] T033 [P] [US1] Create self-correction detection module in rust-core/src/processing/self_correction.rs
-- [ ] T034 [P] [US1] Implement text formatter in rust-core/src/processing/formatter.rs
-- [ ] T035 [US1] Implement text processing pipeline in rust-core/src/processing/mod.rs (depends on T032, T033, T034)
-- [ ] T036 [P] [US1] Create AI prompt templates in rust-core/src/ai/prompts.rs
-- [ ] T037 [P] [US1] Implement Claude API client in rust-core/src/ai/client.rs
-- [ ] T038 [US1] Implement text polishing service in rust-core/src/ai/polisher.rs (depends on T036, T037)
-- [ ] T039 [US1] Create session management FFI functions in rust-core/src/ffi/bridge.rs (start_voice_session, stop_voice_session, cancel_voice_session)
-- [ ] T040 [US1] Create transcription FFI functions in rust-core/src/ffi/bridge.rs (transcribe_audio, polish_text)
-- [ ] T041 [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
-- [ ] T042 [P] [US1] Create VoiceSession Dart model in flutter-ui/lib/models/session.dart
-- [ ] T043 [P] [US1] Implement voice state management in flutter-ui/lib/state/voice_state.dart
-- [ ] T044 [P] [US1] Create voice button widget in flutter-ui/lib/widgets/voice_button.dart
-- [ ] T045 [P] [US1] Create transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart
-- [ ] T046 [US1] Implement home screen with voice input in flutter-ui/lib/screens/home_screen.dart (depends on T044, T045)
-- [ ] T047 [US1] Add audio level visualization to voice button widget in flutter-ui/lib/widgets/voice_button.dart
-- [ ] T048 [US1] Implement session timeout handling (5-minute max) in rust-core/src/ffi/bridge.rs
-- [ ] T049 [US1] Add error handling and user feedback for API failures in flutter-ui/lib/screens/home_screen.dart
-- [ ] T050 [US1] Integrate usage quota checking before session start in rust-core/src/ffi/bridge.rs
+#### Data Models (Test-First)
+- [ ] T027 [RED] [P] [US1] Write tests for VoiceSession model in rust-core/tests/storage/session_test.rs
+- [ ] T028 [RED] [P] [US1] Write tests for TranscriptionHistory model in rust-core/tests/storage/history_test.rs
+- [ ] T029 [GREEN] [P] [US1] Create VoiceSession model in rust-core/src/storage/models.rs (make T027 pass)
+- [ ] T030 [GREEN] [P] [US1] Create TranscriptionHistory model in rust-core/src/storage/models.rs (make T028 pass)
+
+#### Speech Recognition (Test-First)
+- [ ] T031 [RED] [P] [US1] Write tests for Azure Speech API client in rust-core/tests/speech/client_test.rs
+- [ ] T032 [RED] [P] [US1] Write tests for audio capture in rust-core/tests/speech/audio_capture_test.rs
+- [ ] T033 [GREEN] [P] [US1] Implement Azure Speech API client in rust-core/src/speech/client.rs (make T031 pass)
+- [ ] T034 [GREEN] [P] [US1] Implement audio capture module in rust-core/src/speech/audio_capture.rs (make T032 pass)
+- [ ] T035 [RED] [US1] Write tests for speech recognition service in rust-core/tests/speech/service_test.rs
+- [ ] T036 [GREEN] [US1] Implement speech recognition service in rust-core/src/speech/mod.rs (make T035 pass, depends on T033, T034)
+
+#### Text Processing (Test-First)
+- [ ] T037 [RED] [P] [US1] Write tests for filler word removal in rust-core/tests/processing/filler_removal_test.rs
+- [ ] T038 [RED] [P] [US1] Write tests for self-correction detection in rust-core/tests/processing/self_correction_test.rs
+- [ ] T039 [RED] [P] [US1] Write tests for text formatter in rust-core/tests/processing/formatter_test.rs
+- [ ] T040 [GREEN] [P] [US1] Create filler word removal module in rust-core/src/processing/filler_removal.rs (make T037 pass)
+- [ ] T041 [GREEN] [P] [US1] Create self-correction detection module in rust-core/src/processing/self_correction.rs (make T038 pass)
+- [ ] T042 [GREEN] [P] [US1] Implement text formatter in rust-core/src/processing/formatter.rs (make T039 pass)
+- [ ] T043 [RED] [US1] Write tests for text processing pipeline in rust-core/tests/processing/pipeline_test.rs
+- [ ] T044 [GREEN] [US1] Implement text processing pipeline in rust-core/src/processing/mod.rs (make T043 pass, depends on T040, T041, T042)
+
+#### AI Polishing (Test-First)
+- [ ] T045 [RED] [P] [US1] Write tests for AI prompt templates in rust-core/tests/ai/prompts_test.rs
+- [ ] T046 [RED] [P] [US1] Write tests for Claude API client in rust-core/tests/ai/client_test.rs
+- [ ] T047 [GREEN] [P] [US1] Create AI prompt templates in rust-core/src/ai/prompts.rs (make T045 pass)
+- [ ] T048 [GREEN] [P] [US1] Implement Claude API client in rust-core/src/ai/client.rs (make T046 pass)
+- [ ] T049 [RED] [US1] Write tests for text polishing service in rust-core/tests/ai/polisher_test.rs
+- [ ] T050 [GREEN] [US1] Implement text polishing service in rust-core/src/ai/polisher.rs (make T049 pass, depends on T047, T048)
+
+#### FFI Bridge (Test-First)
+- [ ] T051 [RED] [US1] Write tests for session management FFI in rust-core/tests/ffi/session_test.rs
+- [ ] T052 [RED] [US1] Write tests for transcription FFI in rust-core/tests/ffi/transcription_test.rs
+- [ ] T053 [GREEN] [US1] Create session management FFI functions in rust-core/src/ffi/bridge.rs (start_voice_session, stop_voice_session, cancel_voice_session, make T051 pass)
+- [ ] T054 [GREEN] [US1] Create transcription FFI functions in rust-core/src/ffi/bridge.rs (transcribe_audio, polish_text, make T052 pass)
+- [ ] T055 [GREEN] [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
+
+#### Flutter UI (Test-First)
+- [ ] T056 [RED] [P] [US1] Write widget tests for voice button in flutter-ui/test/widgets/voice_button_test.dart
+- [ ] T057 [RED] [P] [US1] Write widget tests for transcription preview in flutter-ui/test/widgets/transcription_preview_test.dart
+- [ ] T058 [GREEN] [P] [US1] Create VoiceSession Dart model in flutter-ui/lib/models/session.dart
+- [ ] T059 [GREEN] [P] [US1] Implement voice state management in flutter-ui/lib/state/voice_state.dart
+- [ ] T060 [GREEN] [P] [US1] Create voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T056 pass)
+- [ ] T061 [GREEN] [P] [US1] Create transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T057 pass)
+- [ ] T062 [RED] [US1] Write integration tests for home screen in flutter-ui/integration_test/home_screen_test.dart
+- [ ] T063 [GREEN] [US1] Implement home screen with voice input in flutter-ui/lib/screens/home_screen.dart (make T062 pass, depends on T060, T061)
+
+#### Additional Features (Test-First)
+- [ ] T064 [RED] [US1] Write tests for audio level visualization in flutter-ui/test/widgets/voice_button_audio_test.dart
+- [ ] T065 [GREEN] [US1] Add audio level visualization to voice button widget in flutter-ui/lib/widgets/voice_button.dart (make T064 pass)
+- [ ] T066 [RED] [US1] Write tests for session timeout handling in rust-core/tests/ffi/timeout_test.rs
+- [ ] T067 [GREEN] [US1] Implement session timeout handling (5-minute max) in rust-core/src/ffi/bridge.rs (make T066 pass)
+- [ ] T068 [RED] [US1] Write tests for error handling in flutter-ui/test/screens/home_screen_error_test.dart
+- [ ] T069 [GREEN] [US1] Add error handling and user feedback for API failures in flutter-ui/lib/screens/home_screen.dart (make T068 pass)
+- [ ] T070 [RED] [US1] Write tests for usage quota checking in rust-core/tests/quota/check_test.rs
+- [ ] T071 [GREEN] [US1] Integrate usage quota checking before session start in rust-core/src/ffi/bridge.rs (make T070 pass)
+
+#### Refactoring & Optimization
+- [ ] T072 [IMPROVE] [US1] Refactor speech recognition module for clarity and performance
+- [ ] T073 [IMPROVE] [US1] Refactor text processing pipeline for maintainability
+- [ ] T074 [IMPROVE] [US1] Refactor AI polishing service for error resilience
+
+#### Integration Testing
+- [ ] T075 [US1] End-to-end integration test: Complete voice-to-text flow (activate → speak → transcribe → polish → display)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can speak and receive polished text
 
@@ -110,21 +156,45 @@
 
 ### Implementation for User Story 2
 
-- [ ] T051 [P] [US2] Create ApplicationContext model in rust-core/src/storage/models.rs
-- [ ] T052 [P] [US2] Implement Windows context detection in rust-core/src/context/windows.rs
-- [ ] T053 [P] [US2] Implement macOS context detection in rust-core/src/context/macos.rs
-- [ ] T054 [P] [US2] Implement Linux context detection in rust-core/src/context/linux.rs
-- [ ] T055 [P] [US2] Implement iOS context detection (manual selection fallback) in rust-core/src/context/ios.rs
-- [ ] T056 [P] [US2] Implement Android context detection in rust-core/src/context/android.rs
-- [ ] T057 [US2] Create unified context detector in rust-core/src/context/detector.rs (depends on T052-T056)
-- [ ] T058 [P] [US2] Create context-specific AI prompts (email, chat, document, code, browser) in rust-core/src/ai/prompts.rs
-- [ ] T059 [US2] Update text polishing service to use context-aware prompts in rust-core/src/ai/polisher.rs
-- [ ] T060 [US2] Create context detection FFI functions in rust-core/src/ffi/bridge.rs (detect_application_context, get_all_contexts)
-- [ ] T061 [US2] Regenerate Flutter bindings with flutter_rust_bridge_codegen
-- [ ] T062 [P] [US2] Create ApplicationContext Dart model in flutter-ui/lib/models/context.dart
-- [ ] T063 [US2] Update voice state to include detected context in flutter-ui/lib/state/voice_state.dart
-- [ ] T064 [US2] Add context indicator to transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart
-- [ ] T065 [US2] Implement automatic context detection on session start in flutter-ui/lib/screens/home_screen.dart
+#### Context Detection (Test-First)
+- [ ] T076 [RED] [P] [US2] Write tests for ApplicationContext model in rust-core/tests/storage/context_test.rs
+- [ ] T077 [GREEN] [P] [US2] Create ApplicationContext model in rust-core/src/storage/models.rs (make T076 pass)
+- [ ] T078 [RED] [P] [US2] Write tests for Windows context detection in rust-core/tests/context/windows_test.rs
+- [ ] T079 [RED] [P] [US2] Write tests for macOS context detection in rust-core/tests/context/macos_test.rs
+- [ ] T080 [RED] [P] [US2] Write tests for Linux context detection in rust-core/tests/context/linux_test.rs
+- [ ] T081 [RED] [P] [US2] Write tests for iOS context detection in rust-core/tests/context/ios_test.rs
+- [ ] T082 [RED] [P] [US2] Write tests for Android context detection in rust-core/tests/context/android_test.rs
+- [ ] T083 [GREEN] [P] [US2] Implement Windows context detection in rust-core/src/context/windows.rs (make T078 pass)
+- [ ] T084 [GREEN] [P] [US2] Implement macOS context detection in rust-core/src/context/macos.rs (make T079 pass)
+- [ ] T085 [GREEN] [P] [US2] Implement Linux context detection in rust-core/src/context/linux.rs (make T080 pass)
+- [ ] T086 [GREEN] [P] [US2] Implement iOS context detection (manual selection fallback) in rust-core/src/context/ios.rs (make T081 pass)
+- [ ] T087 [GREEN] [P] [US2] Implement Android context detection in rust-core/src/context/android.rs (make T082 pass)
+- [ ] T088 [RED] [US2] Write tests for unified context detector in rust-core/tests/context/detector_test.rs
+- [ ] T089 [GREEN] [US2] Create unified context detector in rust-core/src/context/detector.rs (make T088 pass, depends on T083-T087)
+
+#### Context-Aware AI (Test-First)
+- [ ] T090 [RED] [P] [US2] Write tests for context-specific AI prompts in rust-core/tests/ai/context_prompts_test.rs
+- [ ] T091 [GREEN] [P] [US2] Create context-specific AI prompts (email, chat, document, code, browser) in rust-core/src/ai/prompts.rs (make T090 pass)
+- [ ] T092 [RED] [US2] Write tests for context-aware polishing in rust-core/tests/ai/context_polisher_test.rs
+- [ ] T093 [GREEN] [US2] Update text polishing service to use context-aware prompts in rust-core/src/ai/polisher.rs (make T092 pass)
+
+#### FFI & UI (Test-First)
+- [ ] T094 [RED] [US2] Write tests for context detection FFI in rust-core/tests/ffi/context_test.rs
+- [ ] T095 [GREEN] [US2] Create context detection FFI functions in rust-core/src/ffi/bridge.rs (detect_application_context, get_all_contexts, make T094 pass)
+- [ ] T096 [GREEN] [US2] Regenerate Flutter bindings with flutter_rust_bridge_codegen
+- [ ] T097 [GREEN] [P] [US2] Create ApplicationContext Dart model in flutter-ui/lib/models/context.dart
+- [ ] T098 [RED] [US2] Write tests for context-aware voice state in flutter-ui/test/state/voice_state_context_test.dart
+- [ ] T099 [GREEN] [US2] Update voice state to include detected context in flutter-ui/lib/state/voice_state.dart (make T098 pass)
+- [ ] T100 [RED] [US2] Write tests for context indicator widget in flutter-ui/test/widgets/context_indicator_test.dart
+- [ ] T101 [GREEN] [US2] Add context indicator to transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T100 pass)
+- [ ] T102 [RED] [US2] Write tests for automatic context detection in flutter-ui/integration_test/context_detection_test.dart
+- [ ] T103 [GREEN] [US2] Implement automatic context detection on session start in flutter-ui/lib/screens/home_screen.dart (make T102 pass)
+
+#### Refactoring
+- [ ] T104 [IMPROVE] [US2] Refactor context detection for cross-platform consistency
+
+#### Integration Testing
+- [ ] T105 [US2] End-to-end integration test: Context-aware tone adaptation (same phrase in Gmail vs Slack produces different tones)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - tone adapts based on application context
 
@@ -179,51 +249,66 @@
 
 ---
 
-## Phase 7: User Story 5 - AI Assistant Commands (Priority: P5)
+## Phase 7: User Story 5 - AI Assistant Commands (Priority: P5) ⚠️ OUT OF SCOPE
 
-**Goal**: Enable voice commands for text editing (shorten, expand, change tone, summarize) without switching to keyboard
+**Status**: DEFERRED TO v2.0 - Not part of MVP
 
-**Independent Test**: User can speak commands like "make this shorter", "change tone to formal", "summarize this paragraph" and receive appropriate text transformations
+**Rationale**: Core voice-to-text enhancement (US1-US4) provides immediate value. Command execution requires OS-level permissions, extensive security review, and wake word detection infrastructure. Target for Q3 2026 release after MVP validation.
 
-### Implementation for User Story 5
+**Affected Requirements**: FR-013 (voice commands for text editing)
 
-- [ ] T089 [P] [US5] Create command parser module in rust-core/src/ai/commands.rs
-- [ ] T090 [P] [US5] Implement command detection logic in rust-core/src/ai/commands.rs
-- [ ] T091 [P] [US5] Create command-specific AI prompts in rust-core/src/ai/prompts.rs
-- [ ] T092 [US5] Implement command execution service in rust-core/src/ai/command_executor.rs (depends on T089, T090, T091)
-- [ ] T093 [US5] Add command execution FFI functions in rust-core/src/ffi/bridge.rs (execute_command, get_available_commands)
-- [ ] T094 [US5] Regenerate Flutter bindings with flutter_rust_bridge_codegen
-- [ ] T095 [P] [US5] Create command palette widget in flutter-ui/lib/widgets/command_palette.dart
-- [ ] T096 [US5] Add command mode toggle to voice button in flutter-ui/lib/widgets/voice_button.dart
-- [ ] T097 [US5] Implement command history in flutter-ui/lib/state/voice_state.dart
-- [ ] T098 [US5] Add command suggestions to transcription preview in flutter-ui/lib/widgets/transcription_preview.dart
+**Future Implementation** (when in scope):
+- Wake word detection for command activation
+- Command parser and recognition engine
+- Command execution service with safety checks
+- Custom command registry
+- Command palette UI
 
-**Checkpoint**: All user stories should now be independently functional - full feature set complete
+**For MVP**: Skip to Phase 8 after completing Phase 6 (US4)
 
 ---
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-**Purpose**: Improvements that affect multiple user stories
+**Purpose**: Improvements that affect multiple user stories + Non-Functional Requirements validation
 
-- [ ] T099 [P] Create settings screen with all preferences in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T100 [P] Implement usage quota indicator widget in flutter-ui/lib/widgets/quota_indicator.dart
-- [ ] T101 [P] Add quota warning notifications in flutter-ui/lib/screens/home_screen.dart
-- [ ] T102 [P] Implement crash reporting opt-in/opt-out in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T103 [P] Add local transcription history view in flutter-ui/lib/screens/history_screen.dart
-- [ ] T104 [P] Implement data export functionality in rust-core/src/storage/export.rs
-- [ ] T105 [P] Implement data deletion (factory reset) in rust-core/src/storage/cleanup.rs
-- [ ] T106 [P] Add keyboard shortcuts for voice activation in flutter-ui/lib/services/shortcuts.dart
-- [ ] T107 [P] Implement push-to-talk mode in flutter-ui/lib/widgets/voice_button.dart
-- [ ] T108 [P] Add microphone selection UI in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T109 [P] Implement noise cancellation toggle in rust-core/src/speech/audio_capture.rs
-- [ ] T110 [P] Add usage analytics display in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T111 Code cleanup and refactoring across all modules
-- [ ] T112 Performance optimization for <500ms latency target
-- [ ] T113 Memory optimization for <100MB idle target
-- [ ] T114 [P] Update README.md with project overview and setup instructions
-- [ ] T115 [P] Validate quickstart.md setup instructions
-- [ ] T116 Security audit for data encryption and privacy compliance
+### Polish Tasks
+- [ ] T106 [P] Create settings screen with all preferences in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T107 [P] Implement usage quota indicator widget in flutter-ui/lib/widgets/quota_indicator.dart
+- [ ] T108 [P] Add quota warning notifications in flutter-ui/lib/screens/home_screen.dart
+- [ ] T109 [P] Implement crash reporting opt-in/opt-out in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T110 [P] Add local transcription history view in flutter-ui/lib/screens/history_screen.dart
+- [ ] T111 [P] Implement data export functionality in rust-core/src/storage/export.rs
+- [ ] T112 [P] Implement data deletion (factory reset) in rust-core/src/storage/cleanup.rs
+- [ ] T113 [P] Add keyboard shortcuts for voice activation in flutter-ui/lib/services/shortcuts.dart
+- [ ] T114 [P] Implement push-to-talk mode in flutter-ui/lib/widgets/voice_button.dart
+- [ ] T115 [P] Add microphone selection UI in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T116 [P] Implement noise cancellation toggle in rust-core/src/speech/audio_capture.rs
+- [ ] T117 [P] Add usage analytics display in flutter-ui/lib/screens/settings_screen.dart
+- [ ] T118 [RED] Write tests for offline mode handling in rust-core/tests/network/offline_test.rs
+- [ ] T119 [GREEN] Implement offline detection and fallback logic in rust-core/src/network/offline_handler.rs (make T118 pass)
+
+### Non-Functional Requirements Validation (Constitution Compliance)
+- [ ] T120 [RED] Write performance benchmark tests in rust-core/tests/benchmarks/performance_test.rs
+- [ ] T121 [GREEN] Implement performance profiler in rust-core/src/tools/profiler.rs
+- [ ] T122 Run performance benchmarks and validate against constitution targets:
+  - Context detection <50ms (p95)
+  - Memory footprint <100MB idle, <300MB active
+  - UI rendering 60fps minimum
+  - CPU usage <5% idle, <30% during AI processing
+- [ ] T123 [RED] Write security audit tests in rust-core/tests/security/audit_test.rs
+- [ ] T124 Run security audit: cargo audit, FFI boundary review, prompt injection tests, encryption validation
+- [ ] T125 [RED] Write accessibility tests in flutter-ui/test/accessibility/a11y_test.rs
+- [ ] T126 Run accessibility validation: screen reader compatibility, keyboard navigation, WCAG 2.1 AA compliance
+- [ ] T127 Document NFR validation results in docs/validation-report.md
+
+### Code Quality & Documentation
+- [ ] T128 Code cleanup and refactoring across all modules
+- [ ] T129 Performance optimization for <200ms UI response target
+- [ ] T130 Memory optimization for <100MB idle target
+- [ ] T131 [P] Update README.md with project overview and setup instructions
+- [ ] T132 [P] Validate quickstart.md setup instructions
+- [ ] T133 Final security and privacy compliance review
 
 ---
 
