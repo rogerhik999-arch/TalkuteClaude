@@ -4,6 +4,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import '../models/context.dart';
 
 /// Voice recording state
 enum VoiceRecordingStatus {
@@ -24,6 +25,8 @@ class VoiceState {
   final double audioLevel;
   final String? errorMessage;
   final int wordCount;
+  final ApplicationContext? detectedContext;
+  final DateTime? detectedAt;
 
   const VoiceState({
     this.status = VoiceRecordingStatus.idle,
@@ -33,6 +36,8 @@ class VoiceState {
     this.audioLevel = 0.0,
     this.errorMessage,
     this.wordCount = 0,
+    this.detectedContext,
+    this.detectedAt,
   });
 
   VoiceState copyWith({
@@ -44,6 +49,10 @@ class VoiceState {
     String? errorMessage,
     bool clearErrorMessage = false,
     int? wordCount,
+    ApplicationContext? detectedContext,
+    bool clearDetectedContext = false,
+    DateTime? detectedAt,
+    bool clearDetectedAt = false,
   }) {
     return VoiceState(
       status: status ?? this.status,
@@ -53,6 +62,8 @@ class VoiceState {
       audioLevel: audioLevel ?? this.audioLevel,
       errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
       wordCount: wordCount ?? this.wordCount,
+      detectedContext: clearDetectedContext ? null : (detectedContext ?? this.detectedContext),
+      detectedAt: clearDetectedAt ? null : (detectedAt ?? this.detectedAt),
     );
   }
 
@@ -77,6 +88,24 @@ class VoiceStateNotifier extends StateNotifier<VoiceState> {
       rawTranscription: '',
       polishedText: '',
       clearErrorMessage: true,
+      clearDetectedContext: true,
+      clearDetectedAt: true,
+    );
+  }
+
+  /// Set the detected application context
+  void setDetectedContext(ApplicationContext context) {
+    state = state.copyWith(
+      detectedContext: context,
+      detectedAt: DateTime.now(),
+    );
+  }
+
+  /// Clear the detected application context
+  void clearDetectedContext() {
+    state = state.copyWith(
+      clearDetectedContext: true,
+      clearDetectedAt: true,
     );
   }
 

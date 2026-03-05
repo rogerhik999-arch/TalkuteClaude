@@ -268,3 +268,179 @@ async fn test_session_status_transitions() {
     let session = manager.get_session(&session_id).await.unwrap();
     assert_eq!(session.status, SessionStatus::Completed);
 }
+
+// ============================================================================
+// Context-Aware Tone Adaptation Tests (User Story 2)
+// ============================================================================
+
+use talkute_core::context::detector::UnifiedContextDetector;
+use talkute_core::ai::prompts::AIPrompts;
+
+/// Test context-aware tone adaptation: same phrase produces different tones
+#[tokio::test]
+async fn test_context_aware_tone_adaptation() {
+    let prompts = AIPrompts::new();
+
+    // Get prompts for different contexts
+    let email_prompt = prompts.for_context("email");
+    let chat_prompt = prompts.for_context("chat");
+    let code_prompt = prompts.for_context("code");
+
+    // Verify prompts are different for different contexts
+    assert_ne!(email_prompt, chat_prompt, "Email and chat prompts should differ");
+    assert_ne!(chat_prompt, code_prompt, "Chat and code prompts should differ");
+
+    // Verify email prompt emphasizes formal tone
+    let email_lower = email_prompt.to_lowercase();
+    assert!(
+        email_lower.contains("formal") || email_lower.contains("professional"),
+        "Email prompt should mention formal/professional tone"
+    );
+
+    // Verify chat prompt emphasizes casual tone
+    let chat_lower = chat_prompt.to_lowercase();
+    assert!(
+        chat_lower.contains("casual") || chat_lower.contains("conversational"),
+        "Chat prompt should mention casual/conversational tone"
+    );
+
+    // Verify code prompt is technical
+    let code_lower = code_prompt.to_lowercase();
+    assert!(
+        code_lower.contains("technical") || code_lower.contains("code"),
+        "Code prompt should mention technical aspects"
+    );
+}
+
+/// Test context detection flow
+#[tokio::test]
+async fn test_context_detection_flow() {
+    // Create context detector
+    let detector = UnifiedContextDetector::new().await.expect("Failed to create detector");
+
+    // Detect current context
+    let result = detector.detect().await;
+    assert!(result.is_ok(), "Context detection should succeed");
+
+    let context = result.unwrap();
+
+    // Verify context structure
+    assert!(!context.context_id.is_empty(), "Context ID should not be empty");
+    assert!(!context.application_name.is_empty(), "Application name should not be empty");
+    assert!(!context.application_category.is_empty(), "Category should not be empty");
+
+    // Verify category is one of the known categories
+    let valid_categories = vec!["email", "chat", "document", "code", "browser", "general", "other"];
+    assert!(
+        valid_categories.contains(&context.application_category.as_str()),
+        "Category '{}' should be a valid category",
+        context.application_category
+    );
+}
+
+/// Test session with detected context
+#[tokio::test]
+async fn test_session_with_detected_context() {
+    // Detect context
+    let detector = UnifiedContextDetector::new().await.expect("Failed to create detector");
+    let context = detector.detect().await.expect("Failed to detect context");
+
+    // Create session with detected context
+    let session_id = start_voice_session("test-device", Some(context.application_category.clone())).await.unwrap();
+
+    let manager = SessionManager::global();
+    let session = manager.get_session(&session_id).await.unwrap();
+
+    // Verify context was applied to session
+    assert_eq!(session.context_id, Some(context.application_category));
+}
+
+/// Test tone selection based on application category
+#[tokio::test]
+async fn test_tone_selection_by_category() {
+    let prompts = AIPrompts::new();
+
+    // Test all major categories have appropriate prompts
+    let categories = vec![
+        ("email", vec!["formal", "professional"]),
+        ("chat", vec!["casual", "conversational"]),
+        ("document", vec!["professional", "document"]),
+        ("code", vec!["technical", "code"]),
+        ("browser", vec!["browser", "web"]),
+    ];
+
+    for (category, expected_keywords) in categories {
+        let prompt = prompts.for_context(category);
+        let prompt_lower = prompt.to_lowercase();
+
+        let has_keyword = expected_keywords.iter().any(|kw| prompt_lower.contains(kw));
+        assert!(
+            has_keyword,
+            "Category '{}' prompt should contain one of {:?}",
+            category,
+            expected_keywords
+        );
+    }
+}
+
+/// Test context detection categorization consistency
+#[tokio::test]
+async fn test_context_categorization_consistency() {
+    let detector = UnifiedContextDetector::new().await.expect("Failed to create detector");
+
+    // Test consistent categorization for known applications
+    let test_cases = vec![
+        ("Gmail", "email"),
+        ("Outlook", "email"),
+        ("Slack", "chat"),
+        ("Discord", "chat"),
+        ("VSCode", "code"),
+        ("IntelliJ IDEA", "code"),
+        ("Microsoft Word", "document"),
+        ("Google Chrome", "browser"),
+    ];
+
+    for (app_name, expected_category) in test_cases {
+        let category = detector.categorize_application(app_name);
+        assert_eq!(
+            category, expected_category,
+            "Application '{}' should be categorized as '{}'",
+            app_name, expected_category
+        );
+    }
+}
+
+/// Test complete context-aware workflow
+#[tokio::test]
+async fn test_complete_context_aware_workflow() {
+    // Step 1: Detect context
+    let detector = UnifiedContextDetector::new().await.expect("Failed to create detector");
+    let context = detector.detect().await.expect("Failed to detect context");
+
+    // Step 2: Get appropriate prompt for context
+    let prompts = AIPrompts::new();
+    let context_prompt = prompts.for_context(&context.application_category);
+    assert!(!context_prompt.is_empty(), "Prompt should not be empty");
+
+    // Step 3: Create session with context
+    let session_id = start_voice_session("test-device", Some(context.application_category.clone())).await.unwrap();
+    let manager = SessionManager::global();
+
+    // Step 4: Simulate voice input
+    let raw_text = "I wanted to um schedule a meeting for tomorrow";
+    manager.set_raw_transcription(&session_id, raw_text).await.unwrap();
+
+    // Step 5: Process text
+    let pipeline = TextProcessingPipeline::new();
+    let processed = pipeline.process(raw_text);
+    assert!(!processed.contains("um"), "Filler words should be removed");
+
+    // Step 6: Store processed text and mark completed
+    manager.update_status(&session_id, SessionStatus::Completed).await.unwrap();
+    manager.set_polished_text(&session_id, &processed).await.unwrap();
+
+    // Step 7: Verify complete workflow
+    let session = manager.get_session(&session_id).await.unwrap();
+    assert_eq!(session.status, SessionStatus::Completed);
+    assert!(session.word_count > 0);
+}

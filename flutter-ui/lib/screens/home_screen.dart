@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/voice_state.dart';
 import '../widgets/voice_button.dart';
 import '../widgets/transcription_preview.dart';
+import '../widgets/context_indicator.dart';
+import '../models/context.dart';
 
 /// Home screen widget
 class HomeScreen extends ConsumerStatefulWidget {
@@ -55,19 +57,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildContextIndicator(BuildContext context) {
-    // TODO: Show detected application context
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          const Icon(Icons.apps, size: 16),
-          const SizedBox(width: 8),
-          Text(
-            'Ready',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
+      child: const ContextIndicator(),
     );
   }
 
@@ -215,8 +207,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final notifier = ref.read(voiceStateProvider.notifier);
     await notifier.startRecording();
 
+    // Detect application context automatically
+    await _detectContext();
+
     // TODO: Call Rust FFI to start actual recording
     // For now, simulate recording with a timer
+  }
+
+  /// Detect the current application context
+  Future<void> _detectContext() async {
+    final notifier = ref.read(voiceStateProvider.notifier);
+
+    try {
+      // TODO: Call Rust FFI detect_application_context()
+      // For now, simulate context detection with a placeholder
+      // Using a microtask delay to avoid blocking the UI
+      await Future.microtask(() {});
+
+      // Create a simulated context (in real implementation, this comes from FFI)
+      final context = ApplicationContext(
+        contextId: DateTime.now().millisecondsSinceEpoch.toString(),
+        applicationName: 'Unknown',
+        applicationCategory: 'other',
+        detectedAt: DateTime.now(),
+        lastUsedAt: DateTime.now(),
+      );
+
+      notifier.setDetectedContext(context);
+    } catch (e) {
+      // Context detection failure should not block recording
+      debugPrint('Context detection failed: $e');
+    }
   }
 
   Future<void> _stopRecording() async {

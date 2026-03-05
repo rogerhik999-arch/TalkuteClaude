@@ -27,7 +27,24 @@
       "Bash(.specify/scripts/powershell/check-prerequisites.ps1:*)",
       "Bash(gh pr:*)",
       "Bash(powershell.exe:*)",
-      "Bash(GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push:*)"
+      "Bash(GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push:*)",
+      "Bash(flutter_rust_bridge_codegen:*)",
+      "Bash(\"$HOME/.cargo/bin/cargo\":*)",
+      "Bash(cmd.exe:*)",
+      "Bash(curl:*)",
+      "Bash(\"C:/Users/fengr/.cargo/bin/cargo\" install:*)",
+      "Bash(\"C:/Users/fengr/.cargo/bin/cargo\" config:*)",
+      "Bash(netshWinInet.dll:*)",
+      "Bash(where dart:*)",
+      "Bash(\"C:/tools/flutter/bin/dart\" pub:*)",
+      "Bash(pwsh:*)",
+      "Bash(SPECIFY_FEATURE=001-ai-voice-input powershell.exe:*)",
+      "Bash(\"C:/Users/fengr/.cargo/bin/cargo\" test:*)",
+      "Bash(\"C:/Users/fengr/.cargo/bin/cargo\" check:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter test:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo build:*)"
     ]
   }
 }

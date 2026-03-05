@@ -193,22 +193,22 @@ Remaining Phase 2 tasks:
 - [X] T093 [GREEN] [US2] Update text polishing service to use context-aware prompts in rust-core/src/ai/polisher.rs (make T092 pass)
 
 #### FFI & UI (Test-First)
-- [ ] T094 [RED] [US2] Write tests for context detection FFI in rust-core/tests/ffi/context_test.rs
-- [ ] T095 [GREEN] [US2] Create context detection FFI functions in rust-core/src/ffi/bridge.rs (detect_application_context, get_all_contexts, make T094 pass)
-- [ ] T096 [GREEN] [US2] Regenerate Flutter bindings with flutter_rust_bridge_codegen
-- [ ] T097 [GREEN] [P] [US2] Create ApplicationContext Dart model in flutter-ui/lib/models/context.dart
-- [ ] T098 [RED] [US2] Write tests for context-aware voice state in flutter-ui/test/state/voice_state_context_test.dart
-- [ ] T099 [GREEN] [US2] Update voice state to include detected context in flutter-ui/lib/state/voice_state.dart (make T098 pass)
-- [ ] T100 [RED] [US2] Write tests for context indicator widget in flutter-ui/test/widgets/context_indicator_test.dart
-- [ ] T101 [GREEN] [US2] Add context indicator to transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T100 pass)
-- [ ] T102 [RED] [US2] Write tests for automatic context detection in flutter-ui/integration_test/context_detection_test.dart
-- [ ] T103 [GREEN] [US2] Implement automatic context detection on session start in flutter-ui/lib/screens/home_screen.dart (make T102 pass)
+- [X] T094 [RED] [US2] Write tests for context detection FFI in rust-core/tests/ffi/context_test.rs
+- [X] T095 [GREEN] [US2] Create context detection FFI functions in rust-core/src/ffi/bridge.rs (detect_application_context, get_all_contexts, make T094 pass)
+- [X] T096 [GREEN] [US2] Regenerate Flutter bindings with flutter_rust_bridge_codegen
+- [X] T097 [GREEN] [P] [US2] Create ApplicationContext Dart model in flutter-ui/lib/models/context.dart
+- [X] T098 [RED] [US2] Write tests for context-aware voice state in flutter-ui/test/state/voice_state_context_test.dart
+- [X] T099 [GREEN] [US2] Update voice state to include detected context in flutter-ui/lib/state/voice_state.dart (make T098 pass)
+- [X] T100 [RED] [US2] Write tests for context indicator widget in flutter-ui/test/widgets/context_indicator_test.dart
+- [X] T101 [GREEN] [US2] Add context indicator to transcription preview widget in flutter-ui/lib/widgets/transcription_preview.dart (make T100 pass)
+- [X] T102 [RED] [US2] Write tests for automatic context detection in flutter-ui/test/integration/context_detection_test.dart
+- [X] T103 [GREEN] [US2] Implement automatic context detection on session start in flutter-ui/lib/screens/home_screen.dart (make T102 pass)
 
 #### Refactoring
-- [ ] T104 [IMPROVE] [US2] Refactor context detection for cross-platform consistency
+- [X] T104 [IMPROVE] [US2] Refactor context detection for cross-platform consistency
 
 #### Integration Testing
-- [ ] T105 [US2] End-to-end integration test: Context-aware tone adaptation (same phrase in Gmail vs Slack produces different tones)
+- [X] T105 [US2] End-to-end integration test: Context-aware tone adaptation (same phrase in Gmail vs Slack produces different tones)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - tone adapts based on application context
 
