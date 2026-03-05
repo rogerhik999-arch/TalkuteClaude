@@ -156,7 +156,7 @@ Remaining Phase 2 tasks:
 - [X] T074 [IMPROVE] [US1] Refactor AI polishing service for error resilience
 
 #### Integration Testing
-- [ ] T075 [US1] End-to-end integration test: Complete voice-to-text flow (activate → speak → transcribe → polish → display)
+- [X] T075 [US1] End-to-end integration test: Complete voice-to-text flow (activate → speak → transcribe → polish → display)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can speak and receive polished text
 

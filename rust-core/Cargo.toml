@@ -75,3 +75,7 @@ path = "tests/ffi/timeout_test.rs"
 [[test]]
 name = "quota_check_test"
 path = "tests/quota/check_test.rs"
+
+[[test]]
+name = "e2e_test"
+path = "tests/integration/e2e_test.rs"
