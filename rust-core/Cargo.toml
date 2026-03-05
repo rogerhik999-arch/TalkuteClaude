@@ -103,3 +103,15 @@ path = "tests/context/ios_test.rs"
 [[test]]
 name = "context_android_test"
 path = "tests/context/android_test.rs"
+
+[[test]]
+name = "context_detector_test"
+path = "tests/context/detector_test.rs"
+
+[[test]]
+name = "ai_context_prompts_test"
+path = "tests/ai/context_prompts_test.rs"
+
+[[test]]
+name = "ai_context_polisher_test"
+path = "tests/ai/context_polisher_test.rs"

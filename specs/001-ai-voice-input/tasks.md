@@ -183,14 +183,14 @@ Remaining Phase 2 tasks:
 - [X] T085 [GREEN] [P] [US2] Implement Linux context detection in rust-core/src/context/linux.rs (make T080 pass)
 - [X] T086 [GREEN] [P] [US2] Implement iOS context detection (manual selection fallback) in rust-core/src/context/ios.rs (make T081 pass)
 - [X] T087 [GREEN] [P] [US2] Implement Android context detection in rust-core/src/context/android.rs (make T082 pass)
-- [ ] T088 [RED] [US2] Write tests for unified context detector in rust-core/tests/context/detector_test.rs
-- [ ] T089 [GREEN] [US2] Create unified context detector in rust-core/src/context/detector.rs (make T088 pass, depends on T083-T087)
+- [X] T088 [RED] [US2] Write tests for unified context detector in rust-core/tests/context/detector_test.rs
+- [X] T089 [GREEN] [US2] Create unified context detector in rust-core/src/context/detector.rs (make T088 pass, depends on T083-T087)
 
 #### Context-Aware AI (Test-First)
-- [ ] T090 [RED] [P] [US2] Write tests for context-specific AI prompts in rust-core/tests/ai/context_prompts_test.rs
-- [ ] T091 [GREEN] [P] [US2] Create context-specific AI prompts (email, chat, document, code, browser) in rust-core/src/ai/prompts.rs (make T090 pass)
-- [ ] T092 [RED] [US2] Write tests for context-aware polishing in rust-core/tests/ai/context_polisher_test.rs
-- [ ] T093 [GREEN] [US2] Update text polishing service to use context-aware prompts in rust-core/src/ai/polisher.rs (make T092 pass)
+- [X] T090 [RED] [P] [US2] Write tests for context-specific AI prompts in rust-core/tests/ai/context_prompts_test.rs
+- [X] T091 [GREEN] [P] [US2] Create context-specific AI prompts (email, chat, document, code, browser) in rust-core/src/ai/prompts.rs (make T090 pass)
+- [X] T092 [RED] [US2] Write tests for context-aware polishing in rust-core/tests/ai/context_polisher_test.rs
+- [X] T093 [GREEN] [US2] Update text polishing service to use context-aware prompts in rust-core/src/ai/polisher.rs (make T092 pass)
 
 #### FFI & UI (Test-First)
 - [ ] T094 [RED] [US2] Write tests for context detection FFI in rust-core/tests/ffi/context_test.rs
