@@ -171,18 +171,18 @@ Remaining Phase 2 tasks:
 ### Implementation for User Story 2
 
 #### Context Detection (Test-First)
-- [ ] T076 [RED] [P] [US2] Write tests for ApplicationContext model in rust-core/tests/storage/context_test.rs
-- [ ] T077 [GREEN] [P] [US2] Create ApplicationContext model in rust-core/src/storage/models.rs (make T076 pass)
-- [ ] T078 [RED] [P] [US2] Write tests for Windows context detection in rust-core/tests/context/windows_test.rs
-- [ ] T079 [RED] [P] [US2] Write tests for macOS context detection in rust-core/tests/context/macos_test.rs
-- [ ] T080 [RED] [P] [US2] Write tests for Linux context detection in rust-core/tests/context/linux_test.rs
-- [ ] T081 [RED] [P] [US2] Write tests for iOS context detection in rust-core/tests/context/ios_test.rs
-- [ ] T082 [RED] [P] [US2] Write tests for Android context detection in rust-core/tests/context/android_test.rs
-- [ ] T083 [GREEN] [P] [US2] Implement Windows context detection in rust-core/src/context/windows.rs (make T078 pass)
-- [ ] T084 [GREEN] [P] [US2] Implement macOS context detection in rust-core/src/context/macos.rs (make T079 pass)
-- [ ] T085 [GREEN] [P] [US2] Implement Linux context detection in rust-core/src/context/linux.rs (make T080 pass)
-- [ ] T086 [GREEN] [P] [US2] Implement iOS context detection (manual selection fallback) in rust-core/src/context/ios.rs (make T081 pass)
-- [ ] T087 [GREEN] [P] [US2] Implement Android context detection in rust-core/src/context/android.rs (make T082 pass)
+- [X] T076 [RED] [P] [US2] Write tests for ApplicationContext model in rust-core/tests/storage/context_test.rs
+- [X] T077 [GREEN] [P] [US2] Create ApplicationContext model in rust-core/src/storage/models.rs (make T076 pass)
+- [X] T078 [RED] [P] [US2] Write tests for Windows context detection in rust-core/tests/context/windows_test.rs
+- [X] T079 [RED] [P] [US2] Write tests for macOS context detection in rust-core/tests/context/macos_test.rs
+- [X] T080 [RED] [P] [US2] Write tests for Linux context detection in rust-core/tests/context/linux_test.rs
+- [X] T081 [RED] [P] [US2] Write tests for iOS context detection in rust-core/tests/context/ios_test.rs
+- [X] T082 [RED] [P] [US2] Write tests for Android context detection in rust-core/tests/context/android_test.rs
+- [X] T083 [GREEN] [P] [US2] Implement Windows context detection in rust-core/src/context/windows.rs (make T078 pass)
+- [X] T084 [GREEN] [P] [US2] Implement macOS context detection in rust-core/src/context/macos.rs (make T079 pass)
+- [X] T085 [GREEN] [P] [US2] Implement Linux context detection in rust-core/src/context/linux.rs (make T080 pass)
+- [X] T086 [GREEN] [P] [US2] Implement iOS context detection (manual selection fallback) in rust-core/src/context/ios.rs (make T081 pass)
+- [X] T087 [GREEN] [P] [US2] Implement Android context detection in rust-core/src/context/android.rs (make T082 pass)
 - [ ] T088 [RED] [US2] Write tests for unified context detector in rust-core/tests/context/detector_test.rs
 - [ ] T089 [GREEN] [US2] Create unified context detector in rust-core/src/context/detector.rs (make T088 pass, depends on T083-T087)
 

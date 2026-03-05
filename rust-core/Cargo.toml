@@ -79,3 +79,27 @@ path = "tests/quota/check_test.rs"
 [[test]]
 name = "e2e_test"
 path = "tests/integration/e2e_test.rs"
+
+[[test]]
+name = "storage_context_test"
+path = "tests/storage/context_test.rs"
+
+[[test]]
+name = "context_windows_test"
+path = "tests/context/windows_test.rs"
+
+[[test]]
+name = "context_macos_test"
+path = "tests/context/macos_test.rs"
+
+[[test]]
+name = "context_linux_test"
+path = "tests/context/linux_test.rs"
+
+[[test]]
+name = "context_ios_test"
+path = "tests/context/ios_test.rs"
+
+[[test]]
+name = "context_android_test"
+path = "tests/context/android_test.rs"

@@ -7,7 +7,7 @@ use crate::error::Result;
 use crate::speech::SpeechRecognitionService;
 use crate::processing::TextProcessingPipeline;
 use crate::ai::polisher::TextPolisher;
-use crate::context::detector::ContextDetector;
+use crate::context::detector::UnifiedContextDetector;
 use crate::storage::database::Database;
 use crate::storage::profile::DeviceProfileService;
 use serde::{Deserialize, Serialize};
@@ -216,7 +216,7 @@ pub async fn get_polished_text(session_id: &str) -> Result<String> {
 #[allow(clippy::missing_safety_doc)]
 #[flutter_rust_bridge::frb]
 pub async fn detect_application_context() -> Result<ApplicationContext> {
-    let detector = ContextDetector::new().await?;
+    let detector = UnifiedContextDetector::new().await?;
     let context = detector.detect().await?;
 
     Ok(ApplicationContext {

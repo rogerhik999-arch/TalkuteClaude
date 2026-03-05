@@ -1,17 +1,28 @@
 //! Unified context detector
 
-use crate::context::windows::{self as windows_ctx};
-use crate::context::macos::{self as macos_ctx};
-use crate::context::linux::{self as linux_ctx};
-use crate::context::ios::{self as ios_ctx};
-use crate::context::android::{self as android_ctx};
+use crate::context::windows::WindowsContextDetector;
+use crate::context::macos::MacOSContextDetector;
+use crate::context::linux::LinuxContextDetector;
+use crate::context::ios::IOSContextDetector;
+use crate::context::android::AndroidContextDetector;
 use crate::error::{Result, ContextError};
 use crate::storage::models::ApplicationContext;
 use uuid::Uuid;
 
+/// Trait for platform-specific context detectors
+pub trait ContextDetector {
+    /// Detect the current application context
+    fn detect_current_context(&self) -> Result<ApplicationContext>;
+}
+
 /// Unified context detector that works across all platforms
-pub struct ContextDetector {
+pub struct UnifiedContextDetector {
     platform: Platform,
+    windows_detector: WindowsContextDetector,
+    macos_detector: MacOSContextDetector,
+    linux_detector: LinuxContextDetector,
+    ios_detector: IOSContextDetector,
+    android_detector: AndroidContextDetector,
 }
 
 /// Supported platforms
@@ -24,11 +35,18 @@ pub enum Platform {
     Android,
 }
 
-impl ContextDetector {
+impl UnifiedContextDetector {
     /// Create a new context detector
     pub async fn new() -> Result<Self> {
         let platform = Self::detect_platform();
-        Ok(Self { platform })
+        Ok(Self {
+            platform,
+            windows_detector: WindowsContextDetector::new(),
+            macos_detector: MacOSContextDetector::new(),
+            linux_detector: LinuxContextDetector::new(),
+            ios_detector: IOSContextDetector::new(),
+            android_detector: AndroidContextDetector::new(),
+        })
     }
 
     /// Detect the current platform
@@ -48,74 +66,24 @@ impl ContextDetector {
         }
     }
 
+    /// Get the current platform
+    pub fn platform(&self) -> &Platform {
+        &self.platform
+    }
+
     /// Detect the current application context
     pub async fn detect(&self) -> Result<ApplicationContext> {
         match self.platform {
-            Platform::Windows => self.detect_windows().await,
-            Platform::Macos => self.detect_macos().await,
-            Platform::Linux => self.detect_linux().await,
-            Platform::Ios => self.detect_ios().await,
-            Platform::Android => self.detect_android().await,
+            Platform::Windows => self.windows_detector.detect_current_context(),
+            Platform::Macos => self.macos_detector.detect_current_context(),
+            Platform::Linux => self.linux_detector.detect_current_context(),
+            Platform::Ios => self.ios_detector.detect_current_context(),
+            Platform::Android => self.android_detector.detect_current_context(),
         }
     }
 
-    async fn detect_windows(&self) -> Result<ApplicationContext> {
-        windows_ctx::get_active_application_name().await.map(|name| {
-            let category = self.categorize_application(&name);
-            ApplicationContext::new(
-                Uuid::new_v4().to_string(),
-                name,
-                category,
-            )
-        })
-    }
-
-    async fn detect_macos(&self) -> Result<ApplicationContext> {
-        macos_ctx::get_active_application().await.map(|app| {
-            let category = self.categorize_application(&app.name);
-            ApplicationContext::new(
-                Uuid::new_v4().to_string(),
-                app.name,
-                category,
-            )
-        })
-    }
-
-    async fn detect_linux(&self) -> Result<ApplicationContext> {
-        linux_ctx::get_active_application_name().await.map(|name| {
-            let category = self.categorize_application(&name);
-            ApplicationContext::new(
-                Uuid::new_v4().to_string(),
-                name,
-                category,
-            )
-        })
-    }
-
-    async fn detect_ios(&self) -> Result<ApplicationContext> {
-        // On iOS, direct detection is not possible
-        // This should trigger manual selection in the Flutter app
-        // For now, return a placeholder with manual category
-        Ok(ApplicationContext::new(
-            Uuid::new_v4().to_string(),
-            "manual-selection".to_string(),
-            "other".to_string(),
-        ))
-    }
-
-    async fn detect_android(&self) -> Result<ApplicationContext> {
-        android_ctx::get_active_application_name().await.map(|name| {
-            let category = self.categorize_application(&name);
-            ApplicationContext::new(
-                Uuid::new_v4().to_string(),
-                name,
-                category,
-            )
-        })
-    }
-
     /// Categorize an application based on its name
-    fn categorize_application(&self, name: &str) -> String {
+    pub fn categorize_application(&self, name: &str) -> String {
         let name_lower = name.to_lowercase();
 
         if name_lower.contains("gmail") || name_lower.contains("outlook") || name_lower.contains("mail") {
@@ -132,4 +100,32 @@ impl ContextDetector {
             "other".to_string()
         }
     }
+
+    /// Get the platform-specific detector
+    pub fn get_windows_detector(&self) -> &WindowsContextDetector {
+        &self.windows_detector
+    }
+
+    /// Get the macOS detector
+    pub fn get_macos_detector(&self) -> &MacOSContextDetector {
+        &self.macos_detector
+    }
+
+    /// Get the Linux detector
+    pub fn get_linux_detector(&self) -> &LinuxContextDetector {
+        &self.linux_detector
+    }
+
+    /// Get the iOS detector
+    pub fn get_ios_detector(&self) -> &IOSContextDetector {
+        &self.ios_detector
+    }
+
+    /// Get the Android detector
+    pub fn get_android_detector(&self) -> &AndroidContextDetector {
+        &self.android_detector
+    }
 }
+
+// Re-export the old ContextDetector as UnifiedContextDetector alias
+pub type ContextDetectorService = UnifiedContextDetector;
