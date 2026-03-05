@@ -47,6 +47,12 @@ impl AzureSpeechClient {
         Ok(Self { client, config })
     }
 
+    /// Create an Azure Speech client from existing configuration
+    pub fn from_config(config: AzureSpeechConfig) -> Self {
+        let client = Client::new();
+        Self { client, config }
+    }
+
     /// Get an authentication token from Azure
     pub async fn get_token(&self) -> Result<String> {
         let endpoint = self.config.get_speech_endpoint();

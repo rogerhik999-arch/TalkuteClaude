@@ -151,9 +151,9 @@ Remaining Phase 2 tasks:
 - [X] T071 [GREEN] [US1] Integrate usage quota checking before session start in rust-core/src/ffi/bridge.rs (make T070 pass)
 
 #### Refactoring & Optimization
-- [ ] T072 [IMPROVE] [US1] Refactor speech recognition module for clarity and performance
-- [ ] T073 [IMPROVE] [US1] Refactor text processing pipeline for maintainability
-- [ ] T074 [IMPROVE] [US1] Refactor AI polishing service for error resilience
+- [X] T072 [IMPROVE] [US1] Refactor speech recognition module for clarity and performance
+- [X] T073 [IMPROVE] [US1] Refactor text processing pipeline for maintainability
+- [X] T074 [IMPROVE] [US1] Refactor AI polishing service for error resilience
 
 #### Integration Testing
 - [ ] T075 [US1] End-to-end integration test: Complete voice-to-text flow (activate → speak → transcribe → polish → display)
