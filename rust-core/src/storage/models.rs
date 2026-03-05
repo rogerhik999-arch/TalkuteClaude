@@ -105,6 +105,26 @@ impl VoiceSession {
     }
 }
 
+/// Dictionary entry category
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum DictionaryEntryCategory {
+    Technical,
+    Business,
+    Medical,
+    General,
+}
+
+impl DictionaryEntryCategory {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            DictionaryEntryCategory::Technical => "technical",
+            DictionaryEntryCategory::Business => "business",
+            DictionaryEntryCategory::Medical => "medical",
+            DictionaryEntryCategory::General => "general",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PersonalDictionaryEntry {
     pub entry_id: String,
@@ -113,6 +133,7 @@ pub struct PersonalDictionaryEntry {
     pub replacement: String,
     pub case_sensitive: bool,
     pub whole_word_only: bool,
+    pub category: DictionaryEntryCategory,
     pub created_at: DateTime<Utc>,
     pub last_used_at: Option<DateTime<Utc>>,
     pub usage_count: i32,
@@ -124,12 +145,14 @@ impl PersonalDictionaryEntry {
         device_id: String,
         phrase: String,
         replacement: String,
+        category: DictionaryEntryCategory,
     ) -> Self {
         Self {
             entry_id,
             device_id,
             phrase,
             replacement,
+            category,
             case_sensitive: false,
             whole_word_only: true,
             created_at: Utc::now(),
