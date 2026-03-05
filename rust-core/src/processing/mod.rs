@@ -264,3 +264,4 @@ mod tests {
         let _ = pipeline.would_process(text);
     }
 }
+pub mod dictionary;

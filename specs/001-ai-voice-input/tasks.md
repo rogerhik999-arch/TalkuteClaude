@@ -223,16 +223,16 @@ Remaining Phase 2 tasks:
 ### Implementation for User Story 3
 
 #### Data Model (Test-First)
-- [ ] T151 [RED] [P] [US3] Write tests for PersonalDictionaryEntry model in rust-core/tests/storage/dictionary_test.rs
-- [ ] T152 [GREEN] [P] [US3] Create PersonalDictionaryEntry model in rust-core/src/storage/models.rs (make T151 pass)
+- [X] T151 [RED] [P] [US3] Write tests for PersonalDictionaryEntry model in rust-core/tests/storage/dictionary_test.rs
+- [X] T152 [GREEN] [P] [US3] Create PersonalDictionaryEntry model in rust-core/src/storage/models.rs (make T151 pass)
 
 #### Dictionary Storage (Test-First)
-- [ ] T153 [RED] [P] [US3] Write tests for dictionary storage operations in rust-core/tests/storage/dict_ops_test.rs
-- [ ] T154 [GREEN] [P] [US3] Implement dictionary storage operations in rust-core/src/storage/dictionary.rs (make T153 pass)
+- [X] T153 [RED] [P] [US3] Write tests for dictionary storage operations in rust-core/tests/storage/dict_ops_test.rs
+- [X] T154 [GREEN] [P] [US3] Implement dictionary storage operations in rust-core/src/storage/dictionary.rs (make T153 pass)
 
 #### Dictionary Application (Test-First)
-- [ ] T155 [RED] [P] [US3] Write tests for dictionary application logic in rust-core/tests/processing/dict_app_test.rs
-- [ ] T156 [GREEN] [US3] Implement dictionary application logic in rust-core/src/processing/dictionary.rs (make T155 pass)
+- [X] T155 [RED] [P] [US3] Write tests for dictionary application logic in rust-core/tests/processing/dict_app_test.rs
+- [X] T156 [GREEN] [US3] Implement dictionary application logic in rust-core/src/processing/dictionary.rs (make T155 pass)
 
 #### Processing Pipeline Integration (Test-First)
 - [ ] T157 [RED] [US3] Write tests for pipeline with dictionary in rust-core/tests/processing/pipeline_dict_test.rs
