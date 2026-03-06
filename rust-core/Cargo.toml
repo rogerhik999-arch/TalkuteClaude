@@ -121,9 +121,17 @@ name = "ffi_context_test"
 path = "tests/ffi/context_test.rs"
 
 [[test]]
+name = "ffi_dict_test"
+path = "tests/ffi/dict_test.rs"
+
+[[test]]
 name = "storage_dictionary_test"
 path = "tests/storage/dictionary_test.rs"
 
 [[test]]
 name = "processing_dict_app_test"
 path = "tests/processing/dict_app_test.rs"
+
+[[test]]
+name = "processing_pipeline_dict_test"
+path = "tests/processing/pipeline_dict_test.rs"
