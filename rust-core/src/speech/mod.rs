@@ -3,6 +3,7 @@
 //! This module provides voice input capabilities through:
 //! - Audio capture from device microphone
 //! - Azure Speech Services integration for transcription
+//! - Multi-language support with automatic language detection
 //!
 //! # Example
 //!
@@ -16,9 +17,11 @@
 
 pub mod audio_capture;
 pub mod client;
+pub mod language_detection;
 
 pub use audio_capture::{AudioCapture, AudioFormat, AudioEncoding};
 pub use client::{AzureSpeechClient, AzureSpeechConfig, TranscriptionResult};
+pub use language_detection::{LanguageDetector, LanguageDetectionResult};
 
 use crate::error::Result;
 

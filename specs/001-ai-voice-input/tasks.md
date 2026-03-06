@@ -281,14 +281,14 @@ Remaining Phase 2 tasks:
 ### Implementation for User Story 4
 
 #### Multi-language Speech (Test-First)
-- [ ] T177 [RED] [P] [US4] Write tests for multi-language Azure Speech client in rust-core/tests/speech/multilang_test.rs
-- [ ] T178 [RED] [P] [US4] Write tests for language detection in rust-core/tests/speech/lang_detect_test.rs
-- [ ] T179 [GREEN] [P] [US4] Add multi-language support to Azure Speech API client in rust-core/src/speech/client.rs (make T177 pass)
-- [ ] T180 [GREEN] [P] [US4] Implement automatic language detection in rust-core/src/speech/client.rs (make T178 pass)
+- [X] T177 [RED] [P] [US4] Write tests for multi-language Azure Speech client in rust-core/tests/speech/multilang_test.rs
+- [X] T178 [RED] [P] [US4] Write tests for language detection in rust-core/tests/speech/lang_detect_test.rs
+- [X] T179 [GREEN] [P] [US4] Add multi-language support to Azure Speech API client in rust-core/src/speech/client.rs (make T177 pass)
+- [X] T180 [GREEN] [P] [US4] Implement automatic language detection in rust-core/src/speech/client.rs (make T178 pass)
 
 #### Multi-language Processing (Test-First)
-- [ ] T181 [RED] [P] [US4] Write tests for multi-language filler word lists in rust-core/tests/processing/filler_multilang_test.rs
-- [ ] T182 [GREEN] [P] [US4] Add multi-language filler word lists in rust-core/src/processing/filler_removal.rs (make T181 pass)
+- [X] T181 [RED] [P] [US4] Write tests for multi-language filler word lists in rust-core/tests/processing/filler_multilang_test.rs
+- [X] T182 [GREEN] [P] [US4] Add multi-language filler word lists in rust-core/src/processing/filler_removal.rs (make T181 pass)
 
 #### Translation Service (Test-First)
 - [ ] T183 [RED] [P] [US4] Write tests for translation service in rust-core/tests/ai/translation_test.rs

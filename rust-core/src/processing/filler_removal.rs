@@ -1,4 +1,4 @@
-//! Filler word removal module
+//! Filler word removal module with multi-language support
 
 use regex::Regex;
 use std::collections::HashSet;
@@ -11,6 +11,7 @@ pub struct FillerWords {
     spanish: HashSet<&'static str>,
     french: HashSet<&'static str>,
     german: HashSet<&'static str>,
+    korean: HashSet<&'static str>,
 }
 
 impl FillerWords {
@@ -23,12 +24,17 @@ impl FillerWords {
             spanish: Self::spanish_fillers(),
             french: Self::french_fillers(),
             german: Self::german_fillers(),
+            korean: Self::korean_fillers(),
         }
     }
 
     /// English filler words
     fn english_fillers() -> HashSet<&'static str> {
-        ["um", "uh", "like", "you know", "sort of", "kind of", "well", "so", "basically", "literally"]
+        [
+            "um", "uh", "like", "you know", "sort of", "kind of",
+            "well", "so", "basically", "literally", "actually",
+            "right", "okay", "yeah", "honestly", "definitely",
+        ]
             .iter()
             .cloned()
             .collect()
@@ -36,7 +42,10 @@ impl FillerWords {
 
     /// Chinese filler words
     fn chinese_fillers() -> HashSet<&'static str> {
-        ["嗯", "啊", "额", "那个", "这个", "就是", "然后", "就是说"]
+        [
+            "嗯", "啊", "额", "那个", "这个", "就是", "然后",
+            "就是说", "其实", "所以", "对吧", "是吧", "嘛",
+        ]
             .iter()
             .cloned()
             .collect()
@@ -44,7 +53,10 @@ impl FillerWords {
 
     /// Japanese filler words
     fn japanese_fillers() -> HashSet<&'static str> {
-        ["えっと", "あの", "実は", "結構", "わりと"]
+        [
+            "えっと", "あの", "その", "まあ", "なんか",
+            "実は", "結構", "わりと", "ちょっと", "やっぱり",
+        ]
             .iter()
             .cloned()
             .collect()
@@ -52,7 +64,10 @@ impl FillerWords {
 
     /// Spanish filler words
     fn spanish_fillers() -> HashSet<&'static str> {
-        ["tipo", "pues", "eh", "este", "bueno"]
+        [
+            "eh", "este", "pues", "o sea", "bueno", "vale",
+            "tipo", "digamos", "así que", "¿sabes?", "¿verdad?",
+        ]
             .iter()
             .cloned()
             .collect()
@@ -60,7 +75,10 @@ impl FillerWords {
 
     /// French filler words
     fn french_fillers() -> HashSet<&'static str> {
-        ["euh", "genre", "bah", "donc", "alors"]
+        [
+            "euh", "ben", "du coup", "en fait", "quoi",
+            "genre", "bah", "donc", "alors", "tu vois",
+        ]
             .iter()
             .cloned()
             .collect()
@@ -68,10 +86,39 @@ impl FillerWords {
 
     /// German filler words
     fn german_fillers() -> HashSet<&'static str> {
-        ["aeh", "so", "na", "also", "halt"]
+        [
+            "äh", "öhm", "also", "halt", "eben",
+            "so", "na", "gewissermaßen", "quasi", "irgendwie",
+        ]
             .iter()
             .cloned()
             .collect()
+    }
+
+    /// Korean filler words
+    fn korean_fillers() -> HashSet<&'static str> {
+        [
+            "음", "그", "저", "뭐냐", "있잖아",
+            "그니까", "근데", "솔직히", "진짜", "왜냐하면",
+        ]
+            .iter()
+            .cloned()
+            .collect()
+    }
+
+    /// Get fillers for a specific language
+    pub fn get_fillers_for_language(&self, language: &str) -> Vec<String> {
+        let fillers = match language {
+            "zh" | "zh-CN" => &self.chinese,
+            "ja" | "ja-JP" => &self.japanese,
+            "es" | "es-ES" => &self.spanish,
+            "fr" | "fr-FR" => &self.french,
+            "de" | "de-DE" => &self.german,
+            "ko" | "ko-KR" => &self.korean,
+            _ => &self.english,
+        };
+
+        fillers.iter().map(|s| s.to_string()).collect()
     }
 
     /// Remove filler words from text
@@ -82,6 +129,7 @@ impl FillerWords {
             "es" | "es-ES" => &self.spanish,
             "fr" | "fr-FR" => &self.french,
             "de" | "de-DE" => &self.german,
+            "ko" | "ko-KR" => &self.korean,
             _ => &self.english,
         };
 
@@ -104,6 +152,7 @@ impl FillerWords {
             "es" | "es-ES" => &self.spanish,
             "fr" | "fr-FR" => &self.french,
             "de" | "de-DE" => &self.german,
+            "ko" | "ko-KR" => &self.korean,
             _ => &self.english,
         };
 
@@ -146,5 +195,16 @@ mod tests {
         assert!(filler.is_filler("um", "en"));
         assert!(filler.is_filler("uh", "en"));
         assert!(filler.is_filler("嗯", "zh"));
+    }
+
+    #[test]
+    fn test_get_fillers_for_language() {
+        let filler = FillerWords::new();
+
+        let en_fillers = filler.get_fillers_for_language("en");
+        assert!(en_fillers.contains(&"um".to_string()));
+
+        let zh_fillers = filler.get_fillers_for_language("zh");
+        assert!(zh_fillers.contains(&"嗯".to_string()));
     }
 }

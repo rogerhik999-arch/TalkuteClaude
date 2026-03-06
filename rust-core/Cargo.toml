@@ -139,3 +139,16 @@ path = "tests/processing/pipeline_dict_test.rs"
 [[test]]
 name = "storage_dict_export_test"
 path = "tests/storage/dict_export_test.rs"
+
+# User Story 4 - Multi-language support
+[[test]]
+name = "speech_multilang_test"
+path = "tests/speech/multilang_test.rs"
+
+[[test]]
+name = "speech_lang_detect_test"
+path = "tests/speech/lang_detect_test.rs"
+
+[[test]]
+name = "processing_filler_multilang_test"
+path = "tests/processing/filler_multilang_test.rs"
