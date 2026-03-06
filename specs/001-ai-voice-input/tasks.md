@@ -299,9 +299,9 @@ Remaining Phase 2 tasks:
 - [X] T186 [GREEN] [US4] Add translation FFI functions in rust-core/src/ffi/bridge.rs (translate_text, detect_language, make T185 pass)
 
 #### Flutter Translation UI (Test-First)
-- [ ] T187 [GREEN] [P] [US4] Create language model in flutter-ui/lib/models/language.dart
-- [ ] T188 [RED] [P] [US4] Write tests for language selector widget in flutter-ui/test/widgets/language_selector_test.dart
-- [ ] T189 [GREEN] [P] [US4] Create language selector widget in flutter-ui/lib/widgets/language_selector.dart (make T188 pass)
+- [X] T187 [GREEN] [P] [US4] Create language model in flutter-ui/lib/models/language.dart
+- [X] T188 [RED] [P] [US4] Write tests for language selector widget in flutter-ui/test/widgets/language_selector_test.dart
+- [X] T189 [GREEN] [P] [US4] Create language selector widget in flutter-ui/lib/widgets/language_selector.dart (make T188 pass)
 - [ ] T190 [RED] [US4] Write tests for translation toggle in flutter-ui/test/widgets/translation_toggle_test.dart
 - [ ] T191 [GREEN] [US4] Add translation toggle to transcription preview in flutter-ui/lib/widgets/transcription_preview.dart (make T190 pass)
 - [ ] T192 [RED] [US4] Write tests for settings language screen in flutter-ui/test/screens/settings_language_test.dart
