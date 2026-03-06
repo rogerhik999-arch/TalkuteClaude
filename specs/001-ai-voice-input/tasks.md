@@ -259,8 +259,8 @@ Remaining Phase 2 tasks:
 #### Import/Export & Navigation (Test-First)
 - [X] T171 [RED] [US3] Write tests for import/export in rust-core/tests/storage/dict_export_test.rs
 - [X] T172 [GREEN] [US3] Add dictionary import/export functionality in rust-core/src/storage/dictionary.rs (make T171 pass)
-- [ ] T173 [RED] [US3] Write tests for settings navigation in flutter-ui/test/screens/settings_navigation_test.dart
-- [ ] T174 [GREEN] [US3] Add navigation to dictionary screen from settings in flutter-ui/lib/screens/settings_screen.dart (make T173 pass)
+- [X] T173 [RED] [US3] Write tests for settings navigation in flutter-ui/test/screens/settings_navigation_test.dart
+- [X] T174 [GREEN] [US3] Add navigation to dictionary screen from settings in flutter-ui/lib/screens/settings_screen.dart (make T173 pass)
 
 #### Refactoring
 - [ ] T175 [IMPROVE] [US3] Refactor dictionary module for clarity and performance
