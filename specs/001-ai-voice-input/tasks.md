@@ -257,8 +257,8 @@ Remaining Phase 2 tasks:
 - [X] T170 [GREEN] [US3] Implement delete dictionary entry confirmation in flutter-ui/lib/screens/dictionary_screen.dart (make T169 pass)
 
 #### Import/Export & Navigation (Test-First)
-- [ ] T171 [RED] [US3] Write tests for import/export in rust-core/tests/storage/dict_export_test.rs
-- [ ] T172 [GREEN] [US3] Add dictionary import/export functionality in rust-core/src/storage/dictionary.rs (make T171 pass)
+- [X] T171 [RED] [US3] Write tests for import/export in rust-core/tests/storage/dict_export_test.rs
+- [X] T172 [GREEN] [US3] Add dictionary import/export functionality in rust-core/src/storage/dictionary.rs (make T171 pass)
 - [ ] T173 [RED] [US3] Write tests for settings navigation in flutter-ui/test/screens/settings_navigation_test.dart
 - [ ] T174 [GREEN] [US3] Add navigation to dictionary screen from settings in flutter-ui/lib/screens/settings_screen.dart (make T173 pass)
 

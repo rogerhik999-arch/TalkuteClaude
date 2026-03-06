@@ -135,3 +135,7 @@ path = "tests/processing/dict_app_test.rs"
 [[test]]
 name = "processing_pipeline_dict_test"
 path = "tests/processing/pipeline_dict_test.rs"
+
+[[test]]
+name = "storage_dict_export_test"
+path = "tests/storage/dict_export_test.rs"

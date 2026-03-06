@@ -4,7 +4,7 @@
 
 use crate::storage::database::Database;
 use crate::storage::models::{PersonalDictionaryEntry, DictionaryEntryCategory};
-use crate::error::{Result, StorageError};
+use crate::error::{Result, Error, StorageError};
 use rusqlite::params;
 use chrono::{DateTime, Utc};
 
@@ -201,6 +201,93 @@ impl<'a> DictionaryStorage<'a> {
 
         Ok(())
     }
+
+    /// Export dictionary entries to JSON format
+    ///
+    /// Returns a JSON array of dictionary entries suitable for backup or transfer.
+    pub fn export_to_json(&self, device_id: &str) -> Result<String> {
+        let entries = self.get_all_entries(device_id)?;
+
+        let export_entries: Vec<ExportEntry> = entries
+            .into_iter()
+            .map(|e| ExportEntry {
+                phrase: e.phrase,
+                replacement: e.replacement,
+                category: e.category.as_str().to_string(),
+                case_sensitive: e.case_sensitive,
+                whole_word_only: e.whole_word_only,
+            })
+            .collect();
+
+        serde_json::to_string_pretty(&export_entries)
+            .map_err(|e| Error::Storage(StorageError::SerializationFailed(e.to_string())))
+    }
+
+    /// Import dictionary entries from JSON format
+    ///
+    /// Returns the number of entries successfully imported.
+    /// Entries are assigned new IDs and associated with the specified device.
+    pub fn import_from_json(&self, device_id: &str, json: &str) -> Result<usize> {
+        let import_entries: Vec<ImportEntry> = serde_json::from_str(json)
+            .map_err(|e| Error::Storage(StorageError::DeserializationFailed(e.to_string())))?;
+
+        let mut count = 0;
+        for entry in import_entries {
+            // Skip entries missing required fields
+            if entry.phrase.is_empty() || entry.replacement.is_empty() {
+                continue;
+            }
+
+            let new_entry = PersonalDictionaryEntry {
+                entry_id: format!("entry-{}", uuid::Uuid::new_v4()),
+                device_id: device_id.to_string(),
+                phrase: entry.phrase,
+                replacement: entry.replacement,
+                case_sensitive: entry.case_sensitive,
+                whole_word_only: entry.whole_word_only,
+                category: entry.category,
+                created_at: Utc::now(),
+                last_used_at: None,
+                usage_count: 0,
+            };
+
+            match self.add_entry(&new_entry) {
+                Ok(_) => count += 1,
+                Err(_) => continue, // Skip entries that fail to add
+            }
+        }
+
+        Ok(count)
+    }
+}
+
+/// Entry format for JSON export
+#[derive(serde::Serialize)]
+struct ExportEntry {
+    phrase: String,
+    replacement: String,
+    category: String,
+    case_sensitive: bool,
+    whole_word_only: bool,
+}
+
+/// Entry format for JSON import
+#[derive(serde::Deserialize)]
+struct ImportEntry {
+    #[serde(default)]
+    phrase: String,
+    #[serde(default)]
+    replacement: String,
+    #[serde(default)]
+    category: DictionaryEntryCategory,
+    #[serde(default)]
+    case_sensitive: bool,
+    #[serde(default = "default_whole_word")]
+    whole_word_only: bool,
+}
+
+fn default_whole_word() -> bool {
+    true
 }
 
 /// Apply dictionary entries to text

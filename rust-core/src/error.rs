@@ -110,6 +110,10 @@ pub enum StorageError {
     MigrationFailed(String),
     #[error("Data validation failed: {0}")]
     ValidationError(String),
+    #[error("Serialization failed: {0}")]
+    SerializationFailed(String),
+    #[error("Deserialization failed: {0}")]
+    DeserializationFailed(String),
 }
 
 /// Context detection error types
