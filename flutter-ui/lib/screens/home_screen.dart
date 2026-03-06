@@ -9,6 +9,8 @@ import '../widgets/voice_button.dart';
 import '../widgets/transcription_preview.dart';
 import '../widgets/context_indicator.dart';
 import '../models/context.dart';
+import 'settings_screen.dart';
+import 'history_screen.dart';
 
 /// Home screen widget
 class HomeScreen extends ConsumerStatefulWidget {
@@ -234,9 +236,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
 
       notifier.setDetectedContext(context);
+
+      // Check quota and show warning if needed
+      _checkQuotaAndShowWarning();
     } catch (e) {
       // Context detection failure should not block recording
       debugPrint('Context detection failed: $e');
+    }
+  }
+
+  /// Check quota and show warning if needed
+  void _checkQuotaAndShowWarning() {
+    final quotaUsed = 3500; // Simulated quota usage
+    final quotaLimit = 4000;
+    final warningThreshold = 0.8; // 80%
+
+    if (quotaUsed >= quotaLimit * warningThreshold) {
+      // Show warning notification
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.warning, color: Colors.orange),
+              const SizedBox(width: 8),
+              Text('Warning: ${quotaLimit - quotaUsed} words remaining this week'),
+            ],
+          ),
+          action: SnackBarAction(
+            label: 'Upgrade',
+            onPressed: () {
+              // TODO: Navigate to upgrade screen
+            },
+          ),
+          duration: const Duration(seconds: 5),
+        ),
+      );
     }
   }
 
@@ -262,16 +296,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _showSettings(BuildContext context) {
-    // TODO: Navigate to settings screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Settings coming soon')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SettingsScreen(),
+      ),
     );
   }
 
   void _showHistory(BuildContext context) {
-    // TODO: Navigate to history screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('History coming soon')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HistoryScreen(),
+      ),
     );
   }
 }

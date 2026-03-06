@@ -1,10 +1,12 @@
 /// Voice button widget for Talkute
 ///
 /// A button that starts/stops voice recording with visual feedback.
+/// Supports both tap-to-toggle and push-to-talk modes.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/voice_state.dart';
+import '../screens/settings_screen.dart' show pushToTalkProvider;
 
 /// Voice input button widget
 class VoiceButton extends ConsumerStatefulWidget {
@@ -30,6 +32,7 @@ class VoiceButton extends ConsumerStatefulWidget {
 class _VoiceButtonState extends ConsumerState<VoiceButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _isPTTActive = false;
 
   @override
   void initState() {
@@ -48,6 +51,12 @@ class _VoiceButtonState extends ConsumerState<VoiceButton>
 
   void _handleTap() {
     final state = ref.read(voiceStateProvider);
+    final isPushToTalk = ref.read(pushToTalkProvider);
+
+    // In push-to-talk mode, tap does nothing (use long press)
+    if (isPushToTalk) {
+      return;
+    }
 
     if (state.isRecording) {
       widget.onStop?.call();
@@ -55,6 +64,30 @@ class _VoiceButtonState extends ConsumerState<VoiceButton>
         state.status == VoiceRecordingStatus.completed ||
         state.status == VoiceRecordingStatus.error) {
       widget.onStart?.call();
+    }
+  }
+
+  void _handleLongPressStart(LongPressStartDetails details) {
+    final isPushToTalk = ref.read(pushToTalkProvider);
+    final state = ref.read(voiceStateProvider);
+
+    // Only start recording in push-to-talk mode
+    if (isPushToTalk && !state.isRecording &&
+        (state.status == VoiceRecordingStatus.idle ||
+         state.status == VoiceRecordingStatus.completed ||
+         state.status == VoiceRecordingStatus.error)) {
+      _isPTTActive = true;
+      widget.onStart?.call();
+    }
+  }
+
+  void _handleLongPressEnd(LongPressEndDetails details) {
+    final isPushToTalk = ref.read(pushToTalkProvider);
+
+    // Only stop recording in push-to-talk mode
+    if (isPushToTalk && _isPTTActive) {
+      _isPTTActive = false;
+      widget.onStop?.call();
     }
   }
 
@@ -84,6 +117,8 @@ class _VoiceButtonState extends ConsumerState<VoiceButton>
         GestureDetector(
           onTap: _handleTap,
           onLongPress: _handleLongPress,
+          onLongPressStart: _handleLongPressStart,
+          onLongPressEnd: _handleLongPressEnd,
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
@@ -170,11 +205,13 @@ class _VoiceButtonState extends ConsumerState<VoiceButton>
   }
 
   String _getLabel(VoiceState state) {
+    final isPushToTalk = ref.watch(pushToTalkProvider);
+
     switch (state.status) {
       case VoiceRecordingStatus.idle:
-        return 'Tap to record';
+        return isPushToTalk ? 'Hold to record' : 'Tap to record';
       case VoiceRecordingStatus.recording:
-        return 'Tap to stop';
+        return isPushToTalk ? 'Release to stop' : 'Tap to stop';
       case VoiceRecordingStatus.transcribing:
         return 'Transcribing...';
       case VoiceRecordingStatus.polishing:

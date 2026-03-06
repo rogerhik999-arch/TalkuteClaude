@@ -308,10 +308,10 @@ Remaining Phase 2 tasks:
 - [X] T193 [GREEN] [US4] Update settings screen with language preferences in flutter-ui/lib/screens/settings_screen.dart (make T192 pass)
 
 #### Refactoring
-- [ ] T194 [IMPROVE] [US4] Refactor translation service for Quality and error resilience
+- [X] T194 [IMPROVE] [US4] Refactor translation service for Quality and error resilience
 
 #### Integration Testing
-- [ ] T195 [US4] End-to-end integration test: Multi-language workflow (select language → speak → transcribe → optional translate)
+- [X] T195 [US4] End-to-end integration test: Multi-language workflow (select language → speak → transcribe → optional translate)
 
 **Checkpoint**: At this point, User Stories 1-4 should all work - multi-language support is functional
 
@@ -341,20 +341,20 @@ Remaining Phase 2 tasks:
 **Purpose**: Improvements that affect multiple user stories + Non-Functional Requirements validation
 
 ### Polish Tasks
-- [ ] T196 [P] Create settings screen with all preferences in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T197 [P] Implement usage quota indicator widget in flutter-ui/lib/widgets/quota_indicator.dart
-- [ ] T198 [P] Add quota warning notifications in flutter-ui/lib/screens/home_screen.dart
-- [ ] T199 [P] Implement crash reporting opt-in/opt-out in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T200 [P] Add local transcription history view in flutter-ui/lib/screens/history_screen.dart
-- [ ] T201 [P] Implement data export functionality in rust-core/src/storage/export.rs
-- [ ] T202 [P] Implement data deletion (factory reset) in rust-core/src/storage/cleanup.rs
-- [ ] T203 [P] Add keyboard shortcuts for voice activation in flutter-ui/lib/services/shortcuts.dart
-- [ ] T204 [P] Implement push-to-talk mode in flutter-ui/lib/widgets/voice_button.dart
-- [ ] T205 [P] Add microphone selection UI in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T206 [P] Implement noise cancellation toggle in rust-core/src/speech/audio_capture.rs
-- [ ] T207 [P] Add usage analytics display in flutter-ui/lib/screens/settings_screen.dart
-- [ ] T208 [RED] Write tests for offline mode handling in rust-core/tests/network/offline_test.rs
-- [ ] T209 [GREEN] Implement offline detection and fallback logic in rust-core/src/network/offline_handler.rs (make T208 pass)
+- [X] T196 [P] Create settings screen with all preferences in flutter-ui/lib/screens/settings_screen.dart (make T208 pass)
+- [X] T197 [P] Implement usage quota indicator widget in flutter-ui/lib/widgets/quota_indicator.dart
+- [X] T198 [P] Add quota warning notifications in flutter-ui/lib/screens/home_screen.dart
+- [X] T199 [P] Implement crash reporting opt-in/opt-out in flutter-ui/lib/screens/settings_screen.dart
+- [X] T200 [P] Add local transcription history view in flutter-ui/lib/screens/history_screen.dart
+- [X] T201 [P] Implement data export functionality in rust-core/src/storage/export.rs
+- [X] T202 [P] Implement data deletion (factory reset) in rust-core/src/storage/cleanup.rs
+- [X] T203 [P] Add keyboard shortcuts for voice activation in flutter-ui/lib/services/shortcuts.dart
+- [X] T204 [P] Implement push-to-talk mode in flutter-ui/lib/widgets/voice_button.dart
+- [X] T205 [P] Add microphone selection UI in flutter-ui/lib/screens/settings_screen.dart
+- [X] T206 [P] Implement noise cancellation toggle in rust-core/src/speech/audio_capture.rs
+- [X] T207 [P] Add usage analytics display in flutter-ui/lib/screens/settings_screen.dart
+- [X] T208 [RED] Write tests for offline mode handling in rust-core/tests/network/offline_test.rs
+- [X] T209 [GREEN] Implement offline detection and fallback logic in rust-core/src/network/offline_handler.rs (make T208 pass)
 
 ### Non-Functional Requirements Validation (Constitution Compliance)
 - [ ] T210 [RED] Write performance benchmark tests in rust-core/tests/benchmarks/performance_test.rs

@@ -88,8 +88,10 @@ pub enum AiServiceError {
     RequestFailed(String),
     #[error("API authentication failed")]
     AuthenticationFailed,
-    #[error("Invalid response from API")]
-    InvalidResponse,
+    #[error("Invalid response from API: {0}")]
+    InvalidResponse(String),
+    #[error("Invalid request: {0}")]
+    InvalidRequest(String),
 }
 
 /// Type alias for AI errors (used by client modules)
@@ -114,6 +116,10 @@ pub enum StorageError {
     SerializationFailed(String),
     #[error("Deserialization failed: {0}")]
     DeserializationFailed(String),
+    #[error("Export failed: {0}")]
+    ExportFailed(String),
+    #[error("Cleanup failed: {0}")]
+    CleanupFailed(String),
 }
 
 /// Context detection error types

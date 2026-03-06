@@ -31,6 +31,7 @@ pub mod ai;
 pub mod context;
 pub mod error;
 pub mod ffi;
+pub mod network;
 pub mod processing;
 pub mod quota;
 pub mod speech;

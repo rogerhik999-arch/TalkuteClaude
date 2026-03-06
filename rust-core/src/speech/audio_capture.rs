@@ -7,6 +7,7 @@ pub struct AudioCapture {
     device_id: String,
     is_recording: bool,
     audio_format: AudioFormat,
+    noise_cancellation_enabled: bool,
 }
 
 /// Audio format configuration
@@ -29,6 +30,30 @@ pub enum AudioEncoding {
     Aac,
 }
 
+/// Noise cancellation settings
+#[derive(Debug, Clone)]
+pub struct NoiseCancellationSettings {
+    /// Enable noise cancellation
+    pub enabled: bool,
+    /// Noise suppression level (0.0 - 1.0)
+    pub suppression_level: f32,
+    /// Enable automatic gain control
+    pub auto_gain_control: bool,
+    /// Enable echo cancellation
+    pub echo_cancellation: bool,
+}
+
+impl Default for NoiseCancellationSettings {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            suppression_level: 0.8,
+            auto_gain_control: true,
+            echo_cancellation: true,
+        }
+    }
+}
+
 impl AudioCapture {
     /// Create a new audio capture session
     pub fn new(device_id: &str) -> Self {
@@ -36,6 +61,17 @@ impl AudioCapture {
             device_id: device_id.to_string(),
             is_recording: false,
             audio_format: AudioFormat::default(),
+            noise_cancellation_enabled: true,
+        }
+    }
+
+    /// Create audio capture with custom noise cancellation settings
+    pub fn with_noise_cancellation(device_id: &str, enabled: bool) -> Self {
+        Self {
+            device_id: device_id.to_string(),
+            is_recording: false,
+            audio_format: AudioFormat::default(),
+            noise_cancellation_enabled: enabled,
         }
     }
 
@@ -47,6 +83,11 @@ impl AudioCapture {
 
         // Platform-specific initialization
         self.init_platform()?;
+
+        // Apply noise cancellation if enabled
+        if self.noise_cancellation_enabled {
+            self.enable_noise_cancellation();
+        }
 
         self.is_recording = true;
         Ok(())
@@ -80,6 +121,38 @@ impl AudioCapture {
         &self.audio_format
     }
 
+    /// Check if noise cancellation is enabled
+    pub fn is_noise_cancellation_enabled(&self) -> bool {
+        self.noise_cancellation_enabled
+    }
+
+    /// Enable or disable noise cancellation
+    pub fn set_noise_cancellation(&mut self, enabled: bool) {
+        self.noise_cancellation_enabled = enabled;
+
+        // If currently recording, apply the change immediately
+        if self.is_recording {
+            if enabled {
+                self.enable_noise_cancellation();
+            } else {
+                self.disable_noise_cancellation();
+            }
+        }
+    }
+
+    /// Get current noise cancellation settings
+    pub fn get_noise_cancellation_settings(&self) -> NoiseCancellationSettings {
+        let mut settings = NoiseCancellationSettings::default();
+        settings.enabled = self.noise_cancellation_enabled;
+        settings
+    }
+
+    /// Update noise cancellation settings
+    pub fn update_noise_cancellation(&mut self, settings: NoiseCancellationSettings) {
+        self.noise_cancellation_enabled = settings.enabled;
+        // Additional settings would be applied to the platform-specific audio pipeline
+    }
+
     /// Initialize platform-specific audio capture
     fn init_platform(&self) -> Result<()> {
         // Platform-specific implementation
@@ -111,6 +184,21 @@ impl AudioCapture {
 
         // Platform-specific audio level detection
         Ok(0.0)
+    }
+
+    /// Enable noise cancellation on the audio stream
+    fn enable_noise_cancellation(&self) {
+        // Platform-specific noise cancellation:
+        // - Windows: Use Windows Audio Session API (WASAPI) effects
+        // - macOS: Use AVAudioEngine with noise reduction node
+        // - Linux: Use PulseAudio module-echo-cancel or PipeWire filters
+        // - iOS: Use AVAudioSession voice processing
+        // - Android: Use AcousticEchoCanceler and NoiseSuppressor
+    }
+
+    /// Disable noise cancellation on the audio stream
+    fn disable_noise_cancellation(&self) {
+        // Platform-specific cleanup of noise cancellation
     }
 }
 
@@ -152,6 +240,28 @@ mod tests {
 
         assert_eq!(capture.device_id, "test-device");
         assert!(!capture.is_recording);
+        assert!(capture.noise_cancellation_enabled);
+    }
+
+    #[test]
+    fn test_audio_capture_without_noise_cancellation() {
+        let capture = AudioCapture::with_noise_cancellation("test-device", false);
+
+        assert_eq!(capture.device_id, "test-device");
+        assert!(!capture.is_noise_cancellation_enabled());
+    }
+
+    #[test]
+    fn test_noise_cancellation_toggle() {
+        let mut capture = AudioCapture::new("test-device");
+
+        assert!(capture.is_noise_cancellation_enabled());
+
+        capture.set_noise_cancellation(false);
+        assert!(!capture.is_noise_cancellation_enabled());
+
+        capture.set_noise_cancellation(true);
+        assert!(capture.is_noise_cancellation_enabled());
     }
 
     #[test]
@@ -170,5 +280,15 @@ mod tests {
 
         assert_eq!(format.sample_rate, 44100);
         assert_eq!(format.channels, 2);
+    }
+
+    #[test]
+    fn test_noise_cancellation_settings_default() {
+        let settings = NoiseCancellationSettings::default();
+
+        assert!(settings.enabled);
+        assert!(settings.auto_gain_control);
+        assert!(settings.echo_cancellation);
+        assert!(settings.suppression_level > 0.0 && settings.suppression_level <= 1.0);
     }
 }

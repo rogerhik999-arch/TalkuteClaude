@@ -80,7 +80,7 @@ impl ClaudeClient {
 
         let result: ClaudeResponse = response.json()
             .await
-            .map_err(|_| AIError::InvalidResponse)?;
+            .map_err(|e| AIError::InvalidResponse(format!("Failed to parse response: {}", e)))?;
 
         // Extract text from the first content block
         if let Some(block) = result.content.first() {
@@ -89,7 +89,7 @@ impl ClaudeClient {
             }
         }
 
-        Err(AIError::InvalidResponse.into())
+        Err(AIError::InvalidResponse("No text content in response".to_string()).into())
     }
 }
 
