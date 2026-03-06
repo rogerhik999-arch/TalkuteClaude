@@ -266,7 +266,7 @@ Remaining Phase 2 tasks:
 - [X] T175 [IMPROVE] [US3] Refactor dictionary module for clarity and performance
 
 #### Integration Testing
-- [ ] T176 [US3] End-to-end integration test: Personal dictionary workflow (add term → speak sentence → term recognized)
+- [X] T176 [US3] End-to-end integration test: Personal dictionary workflow (add term → speak sentence → term recognized)
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work - users can manage custom vocabulary
 

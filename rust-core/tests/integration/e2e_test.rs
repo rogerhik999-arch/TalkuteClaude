@@ -444,3 +444,327 @@ async fn test_complete_context_aware_workflow() {
     assert_eq!(session.status, SessionStatus::Completed);
     assert!(session.word_count > 0);
 }
+
+// ============================================================================
+// Personal Dictionary Tests (User Story 3)
+// ============================================================================
+
+use talkute_core::storage::dictionary::DictionaryStorage;
+use talkute_core::storage::models::{PersonalDictionaryEntry, DictionaryEntryCategory};
+use talkute_core::storage::dictionary::apply_dictionary_to_text;
+use chrono::Utc;
+
+fn setup_test_device(db: &Database) {
+    db.connection().execute(
+        "INSERT OR IGNORE INTO device_profiles (device_id, created_at, last_active_at)
+         VALUES ('test-device', datetime('now'), datetime('now'))",
+        [],
+    ).expect("Failed to create device profile");
+}
+
+fn create_test_entry(phrase: &str, replacement: &str, category: DictionaryEntryCategory) -> PersonalDictionaryEntry {
+    PersonalDictionaryEntry {
+        entry_id: format!("entry-{}", uuid::Uuid::new_v4()),
+        device_id: "test-device".to_string(),
+        phrase: phrase.to_string(),
+        replacement: replacement.to_string(),
+        case_sensitive: false,
+        whole_word_only: true,
+        category,
+        created_at: Utc::now(),
+        last_used_at: None,
+        usage_count: 0,
+    }
+}
+
+/// Test complete personal dictionary workflow: add term → process text → term recognized
+#[tokio::test]
+async fn test_personal_dictionary_workflow() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Step 1: Add custom term to dictionary
+    let entry = create_test_entry(
+        "API",
+        "Application Programming Interface",
+        DictionaryEntryCategory::Technical,
+    );
+    let entry_id = storage.add_entry(&entry).expect("Failed to add entry");
+    assert!(!entry_id.is_empty());
+
+    // Step 2: Verify entry was stored
+    let entries = storage.get_all_entries("test-device").expect("Failed to get entries");
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].phrase, "API");
+
+    // Step 3: Process text containing the custom term
+    let text = "I need to use the API for my project";
+    let processed = apply_dictionary_to_text(text, &entries);
+
+    // Step 4: Verify the term was correctly replaced
+    assert!(
+        processed.contains("Application Programming Interface"),
+        "Dictionary term should be replaced: got '{}'",
+        processed
+    );
+    assert!(
+        !processed.contains("API"),
+        "Original term should be replaced"
+    );
+}
+
+/// Test dictionary with multiple entries and priority
+#[tokio::test]
+async fn test_dictionary_multiple_entries_priority() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Add entries - using non-overlapping phrases to test priority
+    let entries = vec![
+        create_test_entry("API", "Application Programming Interface", DictionaryEntryCategory::Technical),
+        create_test_entry("CI/CD", "Continuous Integration/Continuous Deployment", DictionaryEntryCategory::Technical),
+        create_test_entry("PR", "Pull Request", DictionaryEntryCategory::Technical),
+    ];
+
+    for entry in &entries {
+        storage.add_entry(entry).expect("Failed to add entry");
+    }
+
+    // Get all entries
+    let stored_entries = storage.get_all_entries("test-device").expect("Failed to get entries");
+    assert_eq!(stored_entries.len(), 3);
+
+    // Process text with multiple dictionary terms
+    let text = "We need to review the PR and improve our CI/CD pipeline using the API";
+    let processed = apply_dictionary_to_text(text, &stored_entries);
+
+    // Verify all terms are replaced
+    assert!(
+        processed.contains("Application Programming Interface"),
+        "Term 'API' should be replaced"
+    );
+    assert!(
+        processed.contains("Continuous Integration/Continuous Deployment"),
+        "Term 'CI/CD' should be replaced"
+    );
+    assert!(
+        processed.contains("Pull Request"),
+        "Term 'PR' should be replaced"
+    );
+}
+
+/// Test dictionary entry categories
+#[tokio::test]
+async fn test_dictionary_categories() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Add entries in different categories
+    let entries = vec![
+        create_test_entry("API", "Application Programming Interface", DictionaryEntryCategory::Technical),
+        create_test_entry("ROI", "Return on Investment", DictionaryEntryCategory::Business),
+        create_test_entry("MRI", "Magnetic Resonance Imaging", DictionaryEntryCategory::Medical),
+        create_test_entry("FYI", "For Your Information", DictionaryEntryCategory::General),
+    ];
+
+    for entry in &entries {
+        storage.add_entry(entry).expect("Failed to add entry");
+    }
+
+    // Verify all entries are stored with correct categories
+    let stored = storage.get_all_entries("test-device").expect("Failed to get entries");
+    assert_eq!(stored.len(), 4);
+
+    let categories: Vec<_> = stored.iter().map(|e| e.category.clone()).collect();
+    assert!(categories.contains(&DictionaryEntryCategory::Technical));
+    assert!(categories.contains(&DictionaryEntryCategory::Business));
+    assert!(categories.contains(&DictionaryEntryCategory::Medical));
+    assert!(categories.contains(&DictionaryEntryCategory::General));
+}
+
+/// Test dictionary entry CRUD operations
+#[tokio::test]
+async fn test_dictionary_crud_operations() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Create
+    let entry = create_test_entry("API", "Application Programming Interface", DictionaryEntryCategory::Technical);
+    let entry_id = storage.add_entry(&entry).expect("Failed to add entry");
+
+    // Read
+    let found = storage.get_entry_by_id(&entry_id, "test-device")
+        .expect("Failed to get entry")
+        .expect("Entry not found");
+    assert_eq!(found.phrase, "API");
+
+    // Update
+    storage.update_entry(
+        &entry_id,
+        "test-device",
+        Some("REST API"),
+        Some("Representational State Transfer API"),
+        Some(true),
+        Some(DictionaryEntryCategory::General),
+    ).expect("Failed to update entry");
+
+    // Verify update
+    let updated = storage.get_entry_by_id(&entry_id, "test-device")
+        .expect("Failed to get entry")
+        .expect("Entry not found");
+    assert_eq!(updated.phrase, "REST API");
+    assert_eq!(updated.replacement, "Representational State Transfer API");
+    assert!(updated.case_sensitive);
+    assert_eq!(updated.category, DictionaryEntryCategory::General);
+
+    // Delete
+    storage.remove_entry(&entry_id, "test-device").expect("Failed to remove entry");
+
+    // Verify deletion
+    let entries = storage.get_all_entries("test-device").expect("Failed to get entries");
+    assert_eq!(entries.len(), 0);
+}
+
+/// Test dictionary import/export
+#[tokio::test]
+async fn test_dictionary_import_export() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Add entries
+    let entries = vec![
+        create_test_entry("API", "Application Programming Interface", DictionaryEntryCategory::Technical),
+        create_test_entry("ROI", "Return on Investment", DictionaryEntryCategory::Business),
+    ];
+
+    for entry in &entries {
+        storage.add_entry(entry).expect("Failed to add entry");
+    }
+
+    // Export
+    let json = storage.export_to_json("test-device").expect("Failed to export");
+    assert!(json.contains("API"));
+    assert!(json.contains("ROI"));
+
+    // Clear
+    for entry in storage.get_all_entries("test-device").unwrap() {
+        storage.remove_entry(&entry.entry_id, "test-device").unwrap();
+    }
+    assert_eq!(storage.get_all_entries("test-device").unwrap().len(), 0);
+
+    // Import
+    let count = storage.import_from_json("test-device", &json).expect("Failed to import");
+    assert_eq!(count, 2);
+
+    // Verify
+    let imported = storage.get_all_entries("test-device").expect("Failed to get entries");
+    assert_eq!(imported.len(), 2);
+}
+
+/// Test dictionary with case sensitivity
+#[tokio::test]
+async fn test_dictionary_case_sensitivity() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Add case-sensitive entry
+    let mut entry = create_test_entry("API", "Application Programming Interface", DictionaryEntryCategory::Technical);
+    entry.case_sensitive = true;
+    storage.add_entry(&entry).expect("Failed to add entry");
+
+    let entries = storage.get_all_entries("test-device").expect("Failed to get entries");
+
+    // Test case-sensitive replacement
+    let text = "The API and api are different things";
+    let processed = apply_dictionary_to_text(text, &entries);
+
+    assert!(processed.contains("Application Programming Interface"), "Uppercase API should be replaced");
+    assert!(processed.contains("api"), "Lowercase api should NOT be replaced (case-sensitive)");
+}
+
+/// Test dictionary with whole-word-only option
+#[tokio::test]
+async fn test_dictionary_whole_word_only() {
+    let db = Database::in_memory().expect("Failed to create database");
+    setup_test_device(&db);
+    let storage = DictionaryStorage::new(&db);
+
+    // Add whole-word-only entry
+    let entry = create_test_entry("app", "application", DictionaryEntryCategory::General);
+    storage.add_entry(&entry).expect("Failed to add entry");
+
+    let entries = storage.get_all_entries("test-device").expect("Failed to get entries");
+
+    // Test whole-word replacement
+    let text = "I opened the app but not the application";
+    let processed = apply_dictionary_to_text(text, &entries);
+
+    assert!(processed.contains("I opened the application"), "Whole word 'app' should be replaced");
+    // "application" contains "app" but should not be modified due to word boundary
+}
+
+/// Test dictionary device isolation
+#[tokio::test]
+async fn test_dictionary_device_isolation() {
+    let db = Database::in_memory().expect("Failed to create database");
+
+    // Setup two devices
+    db.connection().execute(
+        "INSERT OR IGNORE INTO device_profiles (device_id, created_at, last_active_at)
+         VALUES ('device-1', datetime('now'), datetime('now'))",
+        [],
+    ).expect("Failed to create device-1");
+
+    db.connection().execute(
+        "INSERT OR IGNORE INTO device_profiles (device_id, created_at, last_active_at)
+         VALUES ('device-2', datetime('now'), datetime('now'))",
+        [],
+    ).expect("Failed to create device-2");
+
+    let storage = DictionaryStorage::new(&db);
+
+    // Add different entries for each device
+    let entry1 = PersonalDictionaryEntry {
+        entry_id: "entry-1".to_string(),
+        device_id: "device-1".to_string(),
+        phrase: "API".to_string(),
+        replacement: "Application Programming Interface".to_string(),
+        case_sensitive: false,
+        whole_word_only: true,
+        category: DictionaryEntryCategory::Technical,
+        created_at: Utc::now(),
+        last_used_at: None,
+        usage_count: 0,
+    };
+
+    let entry2 = PersonalDictionaryEntry {
+        entry_id: "entry-2".to_string(),
+        device_id: "device-2".to_string(),
+        phrase: "API".to_string(),
+        replacement: "Advanced Programming Interface".to_string(),
+        case_sensitive: false,
+        whole_word_only: true,
+        category: DictionaryEntryCategory::Technical,
+        created_at: Utc::now(),
+        last_used_at: None,
+        usage_count: 0,
+    };
+
+    storage.add_entry(&entry1).expect("Failed to add entry1");
+    storage.add_entry(&entry2).expect("Failed to add entry2");
+
+    // Verify isolation
+    let entries1 = storage.get_all_entries("device-1").expect("Failed to get entries");
+    let entries2 = storage.get_all_entries("device-2").expect("Failed to get entries");
+
+    assert_eq!(entries1.len(), 1);
+    assert_eq!(entries2.len(), 1);
+    assert_eq!(entries1[0].replacement, "Application Programming Interface");
+    assert_eq!(entries2[0].replacement, "Advanced Programming Interface");
+}
