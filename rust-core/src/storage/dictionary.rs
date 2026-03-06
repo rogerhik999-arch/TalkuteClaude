@@ -7,6 +7,7 @@ use crate::storage::models::{PersonalDictionaryEntry, DictionaryEntryCategory};
 use crate::error::{Result, Error, StorageError};
 use rusqlite::params;
 use chrono::{DateTime, Utc};
+use regex::Regex;
 
 /// Personal dictionary storage service
 pub struct DictionaryStorage<'a> {
@@ -39,7 +40,7 @@ impl<'a> DictionaryStorage<'a> {
                 entry.last_used_at.map(|t| t.to_rfc3339()),
                 entry.usage_count,
             ],
-        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
         Ok(entry_id)
     }
@@ -49,41 +50,14 @@ impl<'a> DictionaryStorage<'a> {
         let mut stmt = self.db.connection().prepare(
             "SELECT entry_id, device_id, phrase, replacement, case_sensitive, whole_word_only, category, created_at, last_used_at, usage_count
              FROM personal_dictionary WHERE device_id = ?1 ORDER BY created_at DESC"
-        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
-        let entries = stmt.query_map(params![device_id], |row| {
-            let case_sensitive: i32 = row.get(4)?;
-            let whole_word_only: i32 = row.get(5)?;
-            let category_str: String = row.get(6)?;
-            let created_at_str: String = row.get(7)?;
-            let last_used_at_str: Option<String> = row.get(8)?;
-
-            Ok(PersonalDictionaryEntry {
-                entry_id: row.get(0)?,
-                device_id: row.get(1)?,
-                phrase: row.get(2)?,
-                replacement: row.get(3)?,
-                case_sensitive: case_sensitive != 0,
-                whole_word_only: whole_word_only != 0,
-                category: match category_str.as_str() {
-                    "technical" => DictionaryEntryCategory::Technical,
-                    "business" => DictionaryEntryCategory::Business,
-                    "medical" => DictionaryEntryCategory::Medical,
-                    _ => DictionaryEntryCategory::General,
-                },
-                created_at: DateTime::parse_from_rfc3339(&created_at_str)
-                    .map(|dt| dt.with_timezone(&Utc))
-                    .unwrap_or_else(|_| Utc::now()),
-                last_used_at: last_used_at_str
-                    .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                    .map(|dt| dt.with_timezone(&Utc)),
-                usage_count: row.get(9)?,
-            })
-        }).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        let entries = stmt.query_map(params![device_id], row_to_entry)
+            .map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
         let mut result = Vec::new();
         for entry in entries {
-            result.push(entry.map_err(|e| StorageError::QueryFailed(e.to_string()))?);
+            result.push(entry.map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?);
         }
 
         Ok(result)
@@ -94,40 +68,13 @@ impl<'a> DictionaryStorage<'a> {
         let mut stmt = self.db.connection().prepare(
             "SELECT entry_id, device_id, phrase, replacement, case_sensitive, whole_word_only, category, created_at, last_used_at, usage_count
              FROM personal_dictionary WHERE entry_id = ?1 AND device_id = ?2"
-        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
-        let mut entries = stmt.query_map(params![entry_id, device_id], |row| {
-            let case_sensitive: i32 = row.get(4)?;
-            let whole_word_only: i32 = row.get(5)?;
-            let category_str: String = row.get(6)?;
-            let created_at_str: String = row.get(7)?;
-            let last_used_at_str: Option<String> = row.get(8)?;
-
-            Ok(PersonalDictionaryEntry {
-                entry_id: row.get(0)?,
-                device_id: row.get(1)?,
-                phrase: row.get(2)?,
-                replacement: row.get(3)?,
-                case_sensitive: case_sensitive != 0,
-                whole_word_only: whole_word_only != 0,
-                category: match category_str.as_str() {
-                    "technical" => DictionaryEntryCategory::Technical,
-                    "business" => DictionaryEntryCategory::Business,
-                    "medical" => DictionaryEntryCategory::Medical,
-                    _ => DictionaryEntryCategory::General,
-                },
-                created_at: DateTime::parse_from_rfc3339(&created_at_str)
-                    .map(|dt| dt.with_timezone(&Utc))
-                    .unwrap_or_else(|_| Utc::now()),
-                last_used_at: last_used_at_str
-                    .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                    .map(|dt| dt.with_timezone(&Utc)),
-                usage_count: row.get(9)?,
-            })
-        }).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        let mut entries = stmt.query_map(params![entry_id, device_id], row_to_entry)
+            .map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
         match entries.next() {
-            Some(entry) => Ok(Some(entry.map_err(|e| StorageError::QueryFailed(e.to_string()))?)),
+            Some(entry) => Ok(Some(entry.map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?)),
             None => Ok(None),
         }
     }
@@ -137,7 +84,7 @@ impl<'a> DictionaryStorage<'a> {
         self.db.connection().execute(
             "DELETE FROM personal_dictionary WHERE entry_id = ?1 AND device_id = ?2",
             params![entry_id, device_id],
-        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
         Ok(())
     }
@@ -187,7 +134,7 @@ impl<'a> DictionaryStorage<'a> {
         let params: Vec<&dyn rusqlite::ToSql> = values.iter().map(|v| v.as_ref()).collect();
 
         self.db.connection().execute(&sql, params.as_slice())
-            .map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+            .map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
         Ok(())
     }
@@ -197,7 +144,7 @@ impl<'a> DictionaryStorage<'a> {
         self.db.connection().execute(
             "UPDATE personal_dictionary SET usage_count = usage_count + 1, last_used_at = ?1 WHERE entry_id = ?2 AND device_id = ?3",
             params![Utc::now().to_rfc3339(), entry_id, device_id],
-        ).map_err(|e| StorageError::QueryFailed(e.to_string()))?;
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
 
         Ok(())
     }
@@ -261,6 +208,49 @@ impl<'a> DictionaryStorage<'a> {
     }
 }
 
+/// Convert a database row to a PersonalDictionaryEntry
+fn row_to_entry(row: &rusqlite::Row) -> rusqlite::Result<PersonalDictionaryEntry> {
+    let case_sensitive: i32 = row.get(4)?;
+    let whole_word_only: i32 = row.get(5)?;
+    let category_str: String = row.get(6)?;
+    let created_at_str: String = row.get(7)?;
+    let last_used_at_str: Option<String> = row.get(8)?;
+
+    Ok(PersonalDictionaryEntry {
+        entry_id: row.get(0)?,
+        device_id: row.get(1)?,
+        phrase: row.get(2)?,
+        replacement: row.get(3)?,
+        case_sensitive: case_sensitive != 0,
+        whole_word_only: whole_word_only != 0,
+        category: parse_category(&category_str),
+        created_at: parse_datetime(&created_at_str).unwrap_or_else(Utc::now),
+        last_used_at: last_used_at_str
+            .as_ref()
+            .and_then(|s| parse_datetime(s)),
+        usage_count: row.get(9)?,
+    })
+}
+
+/// Parse category string to enum
+#[inline]
+fn parse_category(s: &str) -> DictionaryEntryCategory {
+    match s {
+        "technical" => DictionaryEntryCategory::Technical,
+        "business" => DictionaryEntryCategory::Business,
+        "medical" => DictionaryEntryCategory::Medical,
+        _ => DictionaryEntryCategory::General,
+    }
+}
+
+/// Parse RFC3339 datetime string
+#[inline]
+fn parse_datetime(s: &str) -> Option<DateTime<Utc>> {
+    DateTime::parse_from_rfc3339(s)
+        .ok()
+        .map(|dt| dt.with_timezone(&Utc))
+}
+
 /// Entry format for JSON export
 #[derive(serde::Serialize)]
 struct ExportEntry {
@@ -295,49 +285,51 @@ fn default_whole_word() -> bool {
 /// This function replaces phrases in the text according to dictionary entries.
 /// Longer, more specific phrases are applied first to avoid partial matches.
 pub fn apply_dictionary_to_text(text: &str, entries: &[PersonalDictionaryEntry]) -> String {
-    use regex::Regex;
-
     if entries.is_empty() {
         return text.to_string();
     }
 
-    // Sort entries by phrase length (descending) to handle longer phrases first
-    let mut sorted_entries = entries.to_vec();
-    sorted_entries.sort_by(|a, b| b.phrase.len().cmp(&a.phrase.len()));
+    // Create indices sorted by phrase length (descending) to avoid cloning entries
+    let mut indices: Vec<usize> = (0..entries.len()).collect();
+    indices.sort_by(|&a, &b| entries[b].phrase.len().cmp(&entries[a].phrase.len()));
 
     let mut result = text.to_string();
 
-    for entry in sorted_entries {
+    for idx in indices {
+        let entry = &entries[idx];
         if entry.phrase.is_empty() {
             continue;
         }
 
-        if entry.whole_word_only {
-            // Use word boundary matching for whole-word-only entries
-            let pattern = if entry.case_sensitive {
-                format!(r"\b{}\b", regex::escape(&entry.phrase))
-            } else {
-                format!(r"(?i)\b{}\b", regex::escape(&entry.phrase))
-            };
-
-            if let Ok(re) = Regex::new(&pattern) {
-                result = re.replace_all(&result, entry.replacement.as_str()).to_string();
-            }
-        } else {
-            // Simple substring replacement
-            if entry.case_sensitive {
-                result = result.replace(&entry.phrase, &entry.replacement);
-            } else {
-                // Case-insensitive replacement
-                let pattern = format!(r"(?i){}", regex::escape(&entry.phrase));
-                if let Ok(re) = Regex::new(&pattern) {
-                    result = re.replace_all(&result, entry.replacement.as_str()).to_string();
-                }
-            }
-        }
+        result = apply_single_entry(&result, entry);
     }
 
     result
+}
+
+/// Apply a single dictionary entry to text
+#[inline]
+fn apply_single_entry(text: &str, entry: &PersonalDictionaryEntry) -> String {
+    if entry.whole_word_only {
+        let pattern = if entry.case_sensitive {
+            format!(r"\b{}\b", regex::escape(&entry.phrase))
+        } else {
+            format!(r"(?i)\b{}\b", regex::escape(&entry.phrase))
+        };
+
+        match Regex::new(&pattern) {
+            Ok(re) => re.replace_all(text, entry.replacement.as_str()).into_owned(),
+            Err(_) => text.to_string(),
+        }
+    } else if entry.case_sensitive {
+        text.replace(&entry.phrase, &entry.replacement)
+    } else {
+        let pattern = format!(r"(?i){}", regex::escape(&entry.phrase));
+        match Regex::new(&pattern) {
+            Ok(re) => re.replace_all(text, entry.replacement.as_str()).into_owned(),
+            Err(_) => text.to_string(),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -427,5 +419,14 @@ mod tests {
         let entries: Vec<PersonalDictionaryEntry> = vec![];
         let result = apply_dictionary_to_text(text, &entries);
         assert_eq!(result, text);
+    }
+
+    #[test]
+    fn test_parse_category() {
+        assert_eq!(parse_category("technical"), DictionaryEntryCategory::Technical);
+        assert_eq!(parse_category("business"), DictionaryEntryCategory::Business);
+        assert_eq!(parse_category("medical"), DictionaryEntryCategory::Medical);
+        assert_eq!(parse_category("general"), DictionaryEntryCategory::General);
+        assert_eq!(parse_category("unknown"), DictionaryEntryCategory::General);
     }
 }

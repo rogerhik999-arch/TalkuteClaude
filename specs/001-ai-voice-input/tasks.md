@@ -263,7 +263,7 @@ Remaining Phase 2 tasks:
 - [X] T174 [GREEN] [US3] Add navigation to dictionary screen from settings in flutter-ui/lib/screens/settings_screen.dart (make T173 pass)
 
 #### Refactoring
-- [ ] T175 [IMPROVE] [US3] Refactor dictionary module for clarity and performance
+- [X] T175 [IMPROVE] [US3] Refactor dictionary module for clarity and performance
 
 #### Integration Testing
 - [ ] T176 [US3] End-to-end integration test: Personal dictionary workflow (add term → speak sentence → term recognized)
