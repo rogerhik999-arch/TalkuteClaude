@@ -235,26 +235,26 @@ Remaining Phase 2 tasks:
 - [X] T156 [GREEN] [US3] Implement dictionary application logic in rust-core/src/processing/dictionary.rs (make T155 pass)
 
 #### Processing Pipeline Integration (Test-First)
-- [ ] T157 [RED] [US3] Write tests for pipeline with dictionary in rust-core/tests/processing/pipeline_dict_test.rs
-- [ ] T158 [GREEN] [US3] Update text processing pipeline to apply dictionary in rust-core/src/processing/mod.rs (make T157 pass, depends on T156)
+- [X] T157 [RED] [US3] Write tests for pipeline with dictionary in rust-core/tests/processing/pipeline_dict_test.rs
+- [X] T158 [GREEN] [US3] Update text processing pipeline to apply dictionary in rust-core/src/processing/mod.rs (make T157 pass, depends on T156)
 
 #### FFI Functions (Test-First)
-- [ ] T159 [RED] [US3] Write tests for dictionary FFI in rust-core/tests/ffi/dict_test.rs
-- [ ] T160 [GREEN] [US3] Create dictionary management FFI functions in rust-core/src/ffi/bridge.rs (add_dictionary_entry, remove_dictionary_entry, get_all_dictionary_entries, update_dictionary_entry, make T159 pass)
+- [X] T159 [RED] [US3] Write tests for dictionary FFI in rust-core/tests/ffi/dict_test.rs
+- [X] T160 [GREEN] [US3] Create dictionary management FFI functions in rust-core/src/ffi/bridge.rs (add_dictionary_entry, remove_dictionary_entry, get_all_dictionary_entries, update_dictionary_entry, make T159 pass)
 
 #### Flutter Binding (Test-First)
 - [ ] T161 [GREEN] [US3] Regenerate Flutter bindings with flutter_rust_bridge_codegen
 
 #### Flutter UI (Test-First)
-- [ ] T162 [GREEN] [P] [US3] Create PersonalDictionaryEntry Dart model in flutter-ui/lib/models/dictionary.dart
-- [ ] T163 [RED] [P] [US3] Write tests for dictionary screen in flutter-ui/test/screens/dictionary_screen_test.dart
-- [ ] T164 [GREEN] [P] [US3] Create dictionary screen UI in flutter-ui/lib/screens/dictionary_screen.dart (make T163 pass)
-- [ ] T165 [RED] [US3] Write tests for add dictionary entry dialog in flutter-ui/test/screens/dict_add_dialog_test.dart
-- [ ] T166 [GREEN] [US3] Implement add dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart (make T165 pass)
-- [ ] T167 [RED] [US3] Write tests for edit dictionary entry dialog in flutter-ui/test/screens/dict_edit_dialog_test.dart
-- [ ] T168 [GREEN] [US3] Implement edit dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart (make T167 pass)
-- [ ] T169 [RED] [US3] Write tests for delete confirmation in flutter-ui/test/screens/dict_delete_test.dart
-- [ ] T170 [GREEN] [US3] Implement delete dictionary entry confirmation in flutter-ui/lib/screens/dictionary_screen.dart (make T169 pass)
+- [X] T162 [GREEN] [P] [US3] Create PersonalDictionaryEntry Dart model in flutter-ui/lib/models/dictionary.dart
+- [X] T163 [RED] [P] [US3] Write tests for dictionary screen in flutter-ui/test/screens/dictionary_screen_test.dart
+- [X] T164 [GREEN] [P] [US3] Create dictionary screen UI in flutter-ui/lib/screens/dictionary_screen.dart (make T163 pass)
+- [X] T165 [RED] [US3] Write tests for add dictionary entry dialog in flutter-ui/test/screens/dict_add_dialog_test.dart
+- [X] T166 [GREEN] [US3] Implement add dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart (make T165 pass)
+- [X] T167 [RED] [US3] Write tests for edit dictionary entry dialog in flutter-ui/test/screens/dict_edit_dialog_test.dart
+- [X] T168 [GREEN] [US3] Implement edit dictionary entry dialog in flutter-ui/lib/screens/dictionary_screen.dart (make T167 pass)
+- [X] T169 [RED] [US3] Write tests for delete confirmation in flutter-ui/test/screens/dict_delete_test.dart
+- [X] T170 [GREEN] [US3] Implement delete dictionary entry confirmation in flutter-ui/lib/screens/dictionary_screen.dart (make T169 pass)
 
 #### Import/Export & Navigation (Test-First)
 - [ ] T171 [RED] [US3] Write tests for import/export in rust-core/tests/storage/dict_export_test.rs

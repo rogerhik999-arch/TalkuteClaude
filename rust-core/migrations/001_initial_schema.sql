@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS personal_dictionary (
     replacement TEXT NOT NULL,
     case_sensitive INTEGER NOT NULL DEFAULT 0,
     whole_word_only INTEGER NOT NULL DEFAULT 1,
+    category TEXT NOT NULL DEFAULT 'general',
     created_at TEXT NOT NULL,
     last_used_at TEXT,
     usage_count INTEGER NOT NULL DEFAULT 0,
