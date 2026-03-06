@@ -291,12 +291,12 @@ Remaining Phase 2 tasks:
 - [X] T182 [GREEN] [P] [US4] Add multi-language filler word lists in rust-core/src/processing/filler_removal.rs (make T181 pass)
 
 #### Translation Service (Test-First)
-- [ ] T183 [RED] [P] [US4] Write tests for translation service in rust-core/tests/ai/translation_test.rs
-- [ ] T184 [GREEN] [P] [US4] Create translation service using Claude API in rust-core/src/ai/translator.rs (make T183 pass)
+- [X] T183 [RED] [P] [US4] Write tests for translation service in rust-core/tests/ai/translation_test.rs
+- [X] T184 [GREEN] [P] [US4] Create translation service using Claude API in rust-core/src/ai/translator.rs (make T183 pass)
 
 #### FFI Translation Functions (Test-First)
-- [ ] T185 [RED] [US4] Write tests for translation FFI in rust-core/tests/ffi/translation_test.rs
-- [ ] T186 [GREEN] [US4] Add translation FFI functions in rust-core/src/ffi/bridge.rs (translate_text, detect_language, make T185 pass)
+- [X] T185 [RED] [US4] Write tests for translation FFI in rust-core/tests/ffi/translation_test.rs
+- [X] T186 [GREEN] [US4] Add translation FFI functions in rust-core/src/ffi/bridge.rs (translate_text, detect_language, make T185 pass)
 
 #### Flutter Translation UI (Test-First)
 - [ ] T187 [GREEN] [P] [US4] Create language model in flutter-ui/lib/models/language.dart

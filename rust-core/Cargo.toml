@@ -152,3 +152,11 @@ path = "tests/speech/lang_detect_test.rs"
 [[test]]
 name = "processing_filler_multilang_test"
 path = "tests/processing/filler_multilang_test.rs"
+
+[[test]]
+name = "ai_translation_test"
+path = "tests/ai/translation_test.rs"
+
+[[test]]
+name = "ffi_translation_test"
+path = "tests/ffi/translation_test.rs"
