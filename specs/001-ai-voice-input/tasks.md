@@ -302,10 +302,10 @@ Remaining Phase 2 tasks:
 - [X] T187 [GREEN] [P] [US4] Create language model in flutter-ui/lib/models/language.dart
 - [X] T188 [RED] [P] [US4] Write tests for language selector widget in flutter-ui/test/widgets/language_selector_test.dart
 - [X] T189 [GREEN] [P] [US4] Create language selector widget in flutter-ui/lib/widgets/language_selector.dart (make T188 pass)
-- [ ] T190 [RED] [US4] Write tests for translation toggle in flutter-ui/test/widgets/translation_toggle_test.dart
-- [ ] T191 [GREEN] [US4] Add translation toggle to transcription preview in flutter-ui/lib/widgets/transcription_preview.dart (make T190 pass)
-- [ ] T192 [RED] [US4] Write tests for settings language screen in flutter-ui/test/screens/settings_language_test.dart
-- [ ] T193 [GREEN] [US4] Update settings screen with language preferences in flutter-ui/lib/screens/settings_screen.dart (make T192 pass)
+- [X] T190 [RED] [US4] Write tests for translation toggle in flutter-ui/test/widgets/translation_toggle_test.dart
+- [X] T191 [GREEN] [US4] Add translation toggle to transcription preview in flutter-ui/lib/widgets/transcription_preview.dart (make T190 pass)
+- [X] T192 [RED] [US4] Write tests for settings language screen in flutter-ui/test/screens/settings_language_test.dart
+- [X] T193 [GREEN] [US4] Update settings screen with language preferences in flutter-ui/lib/screens/settings_screen.dart (make T192 pass)
 
 #### Refactoring
 - [ ] T194 [IMPROVE] [US4] Refactor translation service for Quality and error resilience
