@@ -1,6 +1,6 @@
 //! Tests for context-aware polishing
 
-use talkute_core::ai::polisher::{TextPolisher, PolisherConfig};
+use talkute_core::ai::polisher::{TextPolisher, PolisherConfig, PolishingIntensity};
 use talkute_core::ai::prompts::AIPrompts;
 
 #[test]
@@ -18,6 +18,7 @@ fn test_polisher_config_custom() {
         retry_delay: std::time::Duration::from_secs(1),
         request_timeout: std::time::Duration::from_secs(60),
         fallback_on_error: false,
+        intensity: PolishingIntensity::Standard,
     };
 
     assert_eq!(config.max_retries, 5);
