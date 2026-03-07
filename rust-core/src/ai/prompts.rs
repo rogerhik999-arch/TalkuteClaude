@@ -4,6 +4,10 @@
 pub struct AIPrompts {
     /// Default prompt for text polishing
     pub default_polish: String,
+    /// Light polishing prompt (filler removal only)
+    pub light_polish: String,
+    /// Deep polishing prompt (comprehensive rewrite)
+    pub deep_polish: String,
     /// Email tone prompt
     pub email: String,
     /// Chat tone prompt
@@ -21,6 +25,8 @@ impl AIPrompts {
     pub fn new() -> Self {
         Self {
             default_polish: Self::default_polish_prompt(),
+            light_polish: Self::light_polish_prompt(),
+            deep_polish: Self::deep_polish_prompt(),
             email: Self::email_prompt(),
             chat: Self::chat_prompt(),
             document: Self::document_prompt(),
@@ -35,6 +41,28 @@ impl AIPrompts {
          (um, uh, like, you know), apply self-corrections, and format for \
          clear written communication while preserving the original meaning. \
          Present only the final polished text without any additional commentary.\
+         \n\nSpoken text:\n\"{input}\""
+            .to_string()
+    }
+
+    /// Light polishing prompt (filler removal only)
+    fn light_polish_prompt() -> String {
+        "Remove filler words (um, uh, like, you know) from this spoken text. \
+         Do NOT change any other words or structure. Keep the exact same \
+         meaning and style, just remove the fillers. \
+         Present only the cleaned text without any additional commentary.\
+         \n\nSpoken text:\n\"{input}\""
+            .to_string()
+    }
+
+    /// Deep polishing prompt (comprehensive rewrite)
+    fn deep_polish_prompt() -> String {
+        "Thoroughly rewrite this spoken text into polished written text. \
+         Remove filler words, fix all grammar issues, improve sentence structure, \
+         enhance clarity, and reorganize for better flow. Feel free to make \
+         significant changes to improve the overall quality while preserving \
+         the core meaning. Present only the final polished text without any \
+         additional commentary.\
          \n\nSpoken text:\n\"{input}\""
             .to_string()
     }
@@ -105,6 +133,16 @@ impl AIPrompts {
     /// Get the default polishing prompt
     pub fn default_polishing(&self) -> String {
         self.default_polish.clone()
+    }
+
+    /// Get the light polishing prompt
+    pub fn light_polishing(&self) -> String {
+        self.light_polish.clone()
+    }
+
+    /// Get the deep polishing prompt
+    pub fn deep_polishing(&self) -> String {
+        self.deep_polish.clone()
     }
 
     /// Get a translation prompt for the target language

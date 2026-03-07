@@ -112,6 +112,37 @@ impl TextProcessingPipeline {
         result
     }
 
+    /// Process text with dictionary entries applied.
+    ///
+    /// This includes dictionary substitution in the pipeline.
+    pub fn process_with_dictionary(
+        &self,
+        text: &str,
+        entries: &[crate::storage::models::PersonalDictionaryEntry],
+    ) -> String {
+        let mut result = text.to_string();
+
+        // Stage 0: Apply dictionary entries first
+        result = dictionary::apply_dictionary_to_text(&result, entries);
+
+        // Stage 1: Remove filler words
+        if self.config.remove_fillers {
+            result = self.filler_removal.remove_fillers(&result, &self.config.language);
+        }
+
+        // Stage 2: Apply self-corrections
+        if self.config.apply_corrections {
+            result = self.self_correction.apply_corrections(&result);
+        }
+
+        // Stage 3: Format to written language
+        if self.config.format_text {
+            result = self.formatter.format(&result);
+        }
+
+        result
+    }
+
     /// Process text with a custom language.
     pub fn process_with_language(&self, text: &str, language: &str) -> String {
         let mut result = text.to_string();

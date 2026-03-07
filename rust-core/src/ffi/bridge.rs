@@ -344,3 +344,240 @@ pub async fn get_schema_version() -> Result<i32> {
     // TODO: Implement version tracking
     Ok(1)
 }
+
+// ============================================================================
+// System Tray Functions
+// ============================================================================
+
+/// Set the system tray icon state
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn set_tray_icon(state: String) -> Result<()> {
+    use crate::platform::tray::{PlatformTray, TrayIconState, TRAY_MANAGER};
+
+    let tray_state = match state.as_str() {
+        "recording" => TrayIconState::Recording,
+        "processing" => TrayIconState::Processing,
+        "error" => TrayIconState::Error,
+        _ => TrayIconState::Idle,
+    };
+
+    TRAY_MANAGER.lock().unwrap().set_icon(tray_state)
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+/// Show a notification from the system tray
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn show_tray_notification(title: String, message: String) -> Result<()> {
+    use crate::platform::tray::{PlatformTray, TRAY_MANAGER};
+
+    TRAY_MANAGER.lock().unwrap().show_notification(&title, &message)
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+// ============================================================================
+// Hotkey Functions
+// ============================================================================
+
+/// Register a global hotkey
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn register_global_hotkey(hotkey: String) -> Result<()> {
+    use crate::platform::hotkey::{PlatformHotkey, HOTKEY_MANAGER};
+
+    HOTKEY_MANAGER.lock().unwrap().register(&hotkey)
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+/// Unregister the current hotkey
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn unregister_global_hotkey() -> Result<()> {
+    use crate::platform::hotkey::{PlatformHotkey, HOTKEY_MANAGER};
+
+    HOTKEY_MANAGER.lock().unwrap().unregister()
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+/// Get the currently registered hotkey
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn get_current_hotkey() -> Result<Option<String>> {
+    use crate::platform::hotkey::{PlatformHotkey, HOTKEY_MANAGER};
+
+    Ok(HOTKEY_MANAGER.lock().unwrap().current_hotkey().map(|s| s.to_string()))
+}
+
+// ============================================================================
+// Floating Window Functions
+// ============================================================================
+
+/// Show the floating capsule window
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn show_floating_capsule() -> Result<()> {
+    use crate::platform::window::{WindowManager, WINDOW_MANAGER};
+
+    WINDOW_MANAGER.lock().unwrap().show()
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+/// Hide the floating capsule window
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn hide_floating_capsule() -> Result<()> {
+    use crate::platform::window::{WindowManager, WINDOW_MANAGER};
+
+    WINDOW_MANAGER.lock().unwrap().hide()
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+/// Set the floating capsule visual state
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn set_capsule_state(state: String) -> Result<()> {
+    use crate::platform::window::{WindowManager, CapsuleState, WINDOW_MANAGER};
+
+    let capsule_state = match state.as_str() {
+        "recording" => CapsuleState::Recording,
+        "processing" => CapsuleState::Processing,
+        "success" => CapsuleState::Success,
+        "error" => CapsuleState::Error,
+        _ => CapsuleState::Idle,
+    };
+
+    WINDOW_MANAGER.lock().unwrap().set_state(capsule_state)
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+// ============================================================================
+// Text Injection Functions
+// ============================================================================
+
+/// Inject text at cursor position
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn inject_text_at_cursor(text: String) -> Result<String> {
+    use crate::platform::text_injection::{TextInjector, TEXT_INJECTOR, InjectionResult};
+
+    match TEXT_INJECTOR.inject(&text) {
+        InjectionResult::Injected => Ok("injected".to_string()),
+        InjectionResult::ClipboardFallback => Ok("clipboard".to_string()),
+        InjectionResult::Failed(e) => Err(crate::error::Error::Unknown(e)),
+    }
+}
+
+/// Copy text to system clipboard
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn copy_to_clipboard(text: String) -> Result<()> {
+    use crate::platform::text_injection::{TextInjector, TEXT_INJECTOR};
+
+    TEXT_INJECTOR.copy_to_clipboard(&text)
+        .map_err(|e| crate::error::Error::Unknown(e))
+}
+
+/// Get the name of the currently focused application
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub fn get_focused_application() -> Result<Option<String>> {
+    use crate::platform::text_injection::{TextInjector, TEXT_INJECTOR};
+
+    Ok(TEXT_INJECTOR.get_focused_app())
+}
+
+// ============================================================================
+// Preferences Functions
+// ============================================================================
+
+/// Get a preference value by key
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn get_preference(key: String) -> Result<Option<String>> {
+    // TODO: Implement with storage layer
+    Ok(None)
+}
+
+/// Set a preference value
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn set_preference(key: String, value: String) -> Result<()> {
+    // TODO: Implement with storage layer
+    Ok(())
+}
+
+/// Get all preferences
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn get_all_preferences() -> Result<std::collections::HashMap<String, String>> {
+    // TODO: Implement with storage layer
+    Ok(std::collections::HashMap::new())
+}
+
+// ============================================================================
+// History Functions
+// ============================================================================
+
+/// List history entries with pagination
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn list_history(limit: i32, offset: i32) -> Result<Vec<serde_json::Value>> {
+    // TODO: Implement with storage layer
+    Ok(Vec::new())
+}
+
+/// Clear all history
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn clear_all_history() -> Result<()> {
+    // TODO: Implement with storage layer
+    Ok(())
+}
+
+/// Delete a history entry
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn delete_history_entry(id: String) -> Result<()> {
+    // TODO: Implement with storage layer
+    Ok(())
+}
+
+// ============================================================================
+// Data Export Functions
+// ============================================================================
+
+/// Export user data
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn export_data(format: String) -> Result<String> {
+    // TODO: Implement with storage layer
+    Ok(String::new())
+}
+
+/// Import dictionary entries
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn import_dictionary(json_data: String) -> Result<i32> {
+    // TODO: Implement with storage layer
+    Ok(0)
+}
+
+// ============================================================================
+// Cleanup Functions
+// ============================================================================
+
+/// Run data cleanup based on retention policy
+#[allow(clippy::missing_safety_doc)]
+#[flutter_rust_bridge::frb]
+pub async fn run_cleanup(retention_days: i32) -> Result<u32> {
+    use crate::storage::cleanup::{DataCleanup, CleanupType};
+    use crate::storage::database::Database;
+
+    let db = Database::in_memory()?;
+    let cleanup = DataCleanup::new(db);
+    let result = cleanup.cleanup_by_retention_days(retention_days as i64).await
+        .map_err(|e| crate::error::Error::Unknown(e.to_string()))?;
+
+    Ok(result.items_deleted as u32)
+}

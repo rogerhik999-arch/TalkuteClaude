@@ -25,6 +25,50 @@ use crate::ai::client::ClaudeClient;
 use crate::ai::prompts::AIPrompts;
 use crate::error::{Result, AIError};
 use std::time::Duration;
+use serde::{Deserialize, Serialize};
+
+/// Polishing intensity levels for controlling AI modification depth.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum PolishingIntensity {
+    /// Light: Filler removal only, minimal changes
+    Light,
+    /// Standard: Grammar correction and logic improvements
+    #[default]
+    Standard,
+    /// Deep: Full rewrite with comprehensive improvements
+    Deep,
+}
+
+impl PolishingIntensity {
+    /// Get the description for this intensity level
+    pub fn description(&self) -> &'static str {
+        match self {
+            Self::Light => "Filler removal only",
+            Self::Standard => "Grammar and logic improvements",
+            Self::Deep => "Full rewrite with comprehensive improvements",
+        }
+    }
+
+    /// Get the display name for this intensity level
+    pub fn display_name(&self) -> &'static str {
+        match self {
+            Self::Light => "Light",
+            Self::Standard => "Standard",
+            Self::Deep => "Deep",
+        }
+    }
+
+    /// Parse from string
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_lowercase().as_str() {
+            "light" => Some(Self::Light),
+            "standard" => Some(Self::Standard),
+            "deep" => Some(Self::Deep),
+            _ => None,
+        }
+    }
+}
 
 /// Configuration for the text polisher.
 #[derive(Debug, Clone)]
@@ -37,6 +81,8 @@ pub struct PolisherConfig {
     pub request_timeout: Duration,
     /// Whether to fall back to original text on failure
     pub fallback_on_error: bool,
+    /// Current polishing intensity level
+    pub intensity: PolishingIntensity,
 }
 
 impl Default for PolisherConfig {
@@ -46,6 +92,7 @@ impl Default for PolisherConfig {
             retry_delay: Duration::from_millis(500),
             request_timeout: Duration::from_secs(30),
             fallback_on_error: true,
+            intensity: PolishingIntensity::Standard,
         }
     }
 }
@@ -90,7 +137,17 @@ impl TextPolisher {
     ///
     /// Returns an error if the API request fails after all retries.
     pub async fn polish(&self, text: &str) -> Result<String> {
-        self.polish_with_retry(text, None).await
+        self.polish_with_retry(text, None, None).await
+    }
+
+    /// Polish text with a specific intensity level.
+    ///
+    /// # Arguments
+    ///
+    /// * `text` - The text to polish
+    /// * `intensity` - The polishing intensity level
+    pub async fn polish_with_intensity(&self, text: &str, intensity: PolishingIntensity) -> Result<String> {
+        self.polish_with_retry(text, None, Some(intensity)).await
     }
 
     /// Polish text with context-aware tone.
@@ -100,7 +157,33 @@ impl TextPolisher {
     /// * `text` - The text to polish
     /// * `context` - Context identifier (e.g., "email", "chat", "code")
     pub async fn polish_with_context(&self, text: &str, context: &str) -> Result<String> {
-        self.polish_with_retry(text, Some(context)).await
+        self.polish_with_retry(text, Some(context), None).await
+    }
+
+    /// Polish text with context and intensity.
+    ///
+    /// # Arguments
+    ///
+    /// * `text` - The text to polish
+    /// * `context` - Context identifier (e.g., "email", "chat", "code")
+    /// * `intensity` - The polishing intensity level
+    pub async fn polish_with_context_and_intensity(
+        &self,
+        text: &str,
+        context: &str,
+        intensity: PolishingIntensity,
+    ) -> Result<String> {
+        self.polish_with_retry(text, Some(context), Some(intensity)).await
+    }
+
+    /// Set the polishing intensity level.
+    pub fn set_intensity(&mut self, intensity: PolishingIntensity) {
+        self.config.intensity = intensity;
+    }
+
+    /// Get the current polishing intensity level.
+    pub fn intensity(&self) -> PolishingIntensity {
+        self.config.intensity
     }
 
     /// Translate text to target language.
@@ -117,14 +200,29 @@ impl TextPolisher {
     }
 
     /// Internal method to polish with retry logic.
-    async fn polish_with_retry(&self, text: &str, context: Option<&str>) -> Result<String> {
+    async fn polish_with_retry(
+        &self,
+        text: &str,
+        context: Option<&str>,
+        intensity: Option<PolishingIntensity>,
+    ) -> Result<String> {
+        let effective_intensity = intensity.unwrap_or(self.config.intensity);
+
         let system_prompt = match context {
             Some(ctx) => self.prompts.for_context(ctx),
             None => self.prompts.default_polishing(),
         };
-        let user_message = self.prompts.format(&system_prompt, text);
 
-        match self.call_with_retry(&system_prompt, &user_message).await {
+        // Adjust prompt based on intensity
+        let intensity_prompt = match effective_intensity {
+            PolishingIntensity::Light => self.prompts.light_polishing(),
+            PolishingIntensity::Standard => system_prompt.clone(),
+            PolishingIntensity::Deep => self.prompts.deep_polishing(),
+        };
+
+        let user_message = self.prompts.format(&intensity_prompt, text);
+
+        match self.call_with_retry(&intensity_prompt, &user_message).await {
             Ok(result) => Ok(result),
             Err(e) if self.config.fallback_on_error => {
                 // Log the error but return the original text
@@ -221,9 +319,11 @@ mod tests {
             retry_delay: Duration::from_secs(1),
             request_timeout: Duration::from_secs(60),
             fallback_on_error: false,
+            intensity: PolishingIntensity::Deep,
         };
 
         assert_eq!(config.max_retries, 5);
         assert!(!config.fallback_on_error);
+        assert_eq!(config.intensity, PolishingIntensity::Deep);
     }
 }

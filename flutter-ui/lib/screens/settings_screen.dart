@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dictionary_screen.dart';
 import 'history_screen.dart';
 import '../models/language.dart';
+import '../widgets/intensity_selector.dart';
 
 // ============================================================
 // State Providers for Settings
@@ -177,6 +178,7 @@ class SettingsScreen extends ConsumerWidget {
               );
             },
           ),
+          const IntensitySelector(),
 
           const Divider(),
 

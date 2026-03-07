@@ -12,6 +12,8 @@
 //! - `processing`: Text processing (filler removal, self-correction, formatting)
 //! - `ai`: AI integration (prompts, polisher, client)
 //! - `context`: Platform-specific context detection
+//! - `platform`: Cross-platform abstractions (tray, hotkey, text injection, window)
+//! - `state`: Session state management
 //! - `quota`: Usage quota tracking
 //! - `storage`: Local SQLite database
 //! - `error`: Error types and handling
@@ -32,10 +34,13 @@ pub mod context;
 pub mod error;
 pub mod ffi;
 pub mod network;
+pub mod platform;
 pub mod processing;
 pub mod quota;
 pub mod speech;
+pub mod state;
 pub mod storage;
+pub mod tools;
 
 // Re-export common types
 pub use error::{Error, Result};

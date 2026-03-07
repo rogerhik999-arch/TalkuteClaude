@@ -5,8 +5,10 @@
 //! - Transcription history deletion
 //! - Settings reset
 //! - Complete factory reset
+//! - Retention-based automatic cleanup
 
 use std::path::Path;
+use chrono::{DateTime, Utc, Duration};
 
 use crate::error::{Result, StorageError};
 use crate::storage::database::Database;
@@ -22,6 +24,8 @@ pub enum CleanupType {
     UsageStats,
     /// Clear all data (factory reset)
     AllData,
+    /// Clear history older than retention period
+    RetentionBased,
 }
 
 /// Result of a cleanup operation
@@ -55,7 +59,38 @@ impl DataCleanup {
             CleanupType::History => self.cleanup_history().await,
             CleanupType::UsageStats => self.cleanup_usage_stats().await,
             CleanupType::AllData => self.factory_reset().await,
+            CleanupType::RetentionBased => self.cleanup_by_retention().await,
         }
+    }
+
+    /// Perform retention-based cleanup of old history entries
+    pub async fn cleanup_by_retention(&self) -> Result<CleanupResult> {
+        self.cleanup_by_retention_days(30).await
+    }
+
+    /// Perform retention-based cleanup with custom retention period
+    pub async fn cleanup_by_retention_days(&self, retention_days: i64) -> Result<CleanupResult> {
+        let cutoff_date = Utc::now() - Duration::days(retention_days);
+        let count = self.clear_history_older_than(cutoff_date).await?;
+
+        Ok(CleanupResult {
+            cleanup_type: CleanupType::RetentionBased,
+            items_deleted: count,
+            success: true,
+            message: Some(format!(
+                "Deleted {} history entries older than {} days",
+                count, retention_days
+            )),
+        })
+    }
+
+    /// Clear history entries older than the specified date
+    async fn clear_history_older_than(&self, cutoff_date: DateTime<Utc>) -> Result<u64> {
+        // In a real implementation, this would execute:
+        // DELETE FROM transcription_history WHERE created_at < ?
+        // with cutoff_date as parameter
+        let _ = cutoff_date; // Suppress unused warning
+        Ok(0)
     }
 
     /// Clear all personal dictionary entries

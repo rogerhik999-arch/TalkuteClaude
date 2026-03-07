@@ -48,6 +48,22 @@ regex = "1.10"
 # Self-correction detection
 levenshtein = "1.0"
 
+# Platform integration
+tray-item = "0.10"
+global-hotkey = "0.6"
+enigo = "0.2"
+
+# Platform-specific (conditional)
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser", "windef", "shellapi", "dwmapi"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.26"
+core-graphics = "0.24"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+x11 = { version = "2.21", features = ["xlib"] }
+
 [dev-dependencies]
 tokio-test = "0.4"
 
