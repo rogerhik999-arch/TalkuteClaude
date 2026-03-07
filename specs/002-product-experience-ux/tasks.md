@@ -214,7 +214,7 @@ Each user story phase is independently testable:
 ### Tests (TDD: Write First)
 
 - [X] T161 [P] [US5] Write unit tests for preferences repository in rust-core/tests/unit/preferences_test.rs
-- [ ] T166 [P] [US5] Write widget tests for SettingsScreen in flutter-ui/test/screens/settings_screen_test.dart
+- [X] T166 [P] [US5] Write widget tests for SettingsScreen in flutter-ui/test/screens/settings_screen_test.dart
 
 ### Flutter UI - Settings Screen
 
@@ -244,7 +244,7 @@ Each user story phase is independently testable:
 ### Tests (TDD: Write First)
 
 - [X] T162 [P] [US6] Write unit tests for dictionary repository in rust-core/tests/unit/dictionary_test.rs
-- [ ] T168 [P] [US6] Write widget tests for DictionaryScreen in flutter-ui/test/screens/dictionary_screen_test.dart
+- [X] T168 [P] [US6] Write widget tests for DictionaryScreen in flutter-ui/test/screens/dictionary_screen_test.dart
 
 ### Rust Core - Dictionary
 
@@ -252,14 +252,14 @@ Each user story phase is independently testable:
 - [X] T096 [US6] Create add_dictionary_entry FFI function in rust-core/src/ffi/dictionary.rs
 - [X] T097 [US6] Create update_dictionary_entry FFI function in rust-core/src/ffi/dictionary.rs
 - [X] T098 [US6] Create delete_dictionary_entry FFI function in rust-core/src/ffi/dictionary.rs
-- [ ] T099 [US6] Integrate dictionary lookup into transcription pipeline in rust-core/src/processing/mod.rs
+- [X] T099 [US6] Integrate dictionary lookup into transcription pipeline in rust-core/src/processing/mod.rs
 
 ### Flutter UI - Dictionary Screen
 
 - [X] T100 [US6] Create DictionaryScreen in flutter-ui/lib/screens/dictionary_screen.dart
 - [X] T101 [US6] Create dictionary entry list with two-column format in flutter-ui/lib/screens/dictionary_screen.dart
 - [X] T102 [US6] Create add/edit dictionary entry dialog in flutter-ui/lib/widgets/dictionary_entry_dialog.dart
-- [ ] T103 [US6] Wire dictionary screen to settings navigation
+- [X] T103 [US6] Wire dictionary screen to settings navigation
 - [ ] T104 [US6] Test dictionary CRUD operations and transcription integration
 
 ---
@@ -272,7 +272,7 @@ Each user story phase is independently testable:
 ### Tests (TDD: Write First)
 
 - [X] T163 [P] [US7] Write unit tests for history repository in rust-core/tests/unit/history_test.rs
-- [ ] T167 [P] [US7] Write widget tests for HistoryScreen in flutter-ui/test/screens/history_screen_test.dart
+- [X] T167 [P] [US7] Write widget tests for HistoryScreen in flutter-ui/test/screens/history_screen_test.dart
 
 ### Rust Core - History
 
@@ -280,8 +280,8 @@ Each user story phase is independently testable:
 - [X] T106 [US7] Create list_history_by_date FFI function in rust-core/src/ffi/history.rs
 - [X] T107 [US7] Create delete_history_entry FFI function in rust-core/src/ffi/history.rs
 - [X] T108 [US7] Create clear_all_history FFI function in rust-core/src/ffi/history.rs
-- [ ] T109 [US7] Auto-save transcription to history on completion in rust-core/src/state/manager.rs
-- [ ] T110 [US7] Implement run_cleanup FFI function for retention policy in rust-core/src/ffi/cleanup.rs
+- [X] T109 [US7] Auto-save transcription to history on completion in rust-core/src/state/manager.rs
+- [X] T110 [US7] Implement run_cleanup FFI function for retention policy in rust-core/src/ffi/cleanup.rs
 
 ### Flutter UI - History Screen
 
@@ -381,8 +381,8 @@ Each user story phase is independently testable:
 
 - [X] T151 [P] Create export_data FFI function in rust-core/src/ffi/export.rs
 - [X] T152 [P] Create import_dictionary FFI function in rust-core/src/ffi/export.rs
-- [ ] T153 Implement data export UI in settings
-- [ ] T154 Implement dictionary import UI in settings
+- [X] T153 Implement data export UI in settings
+- [X] T154 Implement dictionary import UI in settings
 
 ### Performance
 
