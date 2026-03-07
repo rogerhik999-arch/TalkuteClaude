@@ -374,8 +374,8 @@ Each user story phase is independently testable:
 
 - [X] T147 Implement comprehensive error messages in floating capsule for all error states
 - [X] T148 Add offline detection and cached retry queue in rust-core/src/network/offline_handler.rs
-- [ ] T149 Implement clipboard fallback UI when text injection fails
-- [ ] T150 Add network error recovery with retry button
+- [X] T149 Implement clipboard fallback UI when text injection fails
+- [X] T150 Add network error recovery with retry button
 
 ### Data Export/Import
 
@@ -399,8 +399,8 @@ Each user story phase is independently testable:
 ### Documentation
 
 - [X] T170 Update CLAUDE.md with new platform modules
-- [ ] T171 Document platform-specific setup requirements (permissions, etc.)
-- [ ] T172 Document mobile keyboard installation instructions
+- [X] T171 Document platform-specific setup requirements (permissions, etc.)
+- [X] T172 Document mobile keyboard installation instructions
 
 ### Accessibility Verification (FR-025)
 
@@ -412,8 +412,8 @@ Each user story phase is independently testable:
 
 - [X] T176 Implement quota tracking in rust-core/src/storage/quota.rs
 - [X] T177 Add grace period logic (10% overage with warning) in rust-core/src/storage/quota.rs
-- [ ] T178 Show quota warning notification when entering grace period
-- [ ] T179 Show hard block UI with upgrade prompt when quota fully exceeded
+- [X] T178 Show quota warning notification when entering grace period
+- [X] T179 Show hard block UI with upgrade prompt when quota fully exceeded
 
 ---
 
