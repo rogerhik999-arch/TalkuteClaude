@@ -57,8 +57,8 @@ Each user story phase is independently testable:
 
 ### Tests (TDD: Write First)
 
-- [ ] T160 [P] Write unit tests for session state machine transitions in rust-core/tests/unit/session_test.rs
-- [ ] T164 [P] Write integration tests for FFI functions in rust-core/tests/integration/ffi_test.rs
+- [X] T160 [P] Write unit tests for session state machine transitions in rust-core/tests/unit/session_test.rs
+- [X] T164 [P] Write integration tests for FFI functions in rust-core/tests/integration/ffi_test.rs
 
 ### Session State Machine
 
@@ -101,7 +101,7 @@ Each user story phase is independently testable:
 
 ### Tests (TDD: Write First)
 
-- [ ] T165 [P] [US1] Write widget tests for FloatingCapsule states in flutter-ui/test/widgets/floating_capsule_test.dart
+- [X] T165 [P] [US1] Write widget tests for FloatingCapsule states in flutter-ui/test/widgets/floating_capsule_test.dart
 
 ### Rust Core - Session Management
 
@@ -213,7 +213,7 @@ Each user story phase is independently testable:
 
 ### Tests (TDD: Write First)
 
-- [ ] T161 [P] [US5] Write unit tests for preferences repository in rust-core/tests/unit/preferences_test.rs
+- [X] T161 [P] [US5] Write unit tests for preferences repository in rust-core/tests/unit/preferences_test.rs
 - [ ] T166 [P] [US5] Write widget tests for SettingsScreen in flutter-ui/test/screens/settings_screen_test.dart
 
 ### Flutter UI - Settings Screen
@@ -243,7 +243,7 @@ Each user story phase is independently testable:
 
 ### Tests (TDD: Write First)
 
-- [ ] T162 [P] [US6] Write unit tests for dictionary repository in rust-core/tests/unit/dictionary_test.rs
+- [X] T162 [P] [US6] Write unit tests for dictionary repository in rust-core/tests/unit/dictionary_test.rs
 - [ ] T168 [P] [US6] Write widget tests for DictionaryScreen in flutter-ui/test/screens/dictionary_screen_test.dart
 
 ### Rust Core - Dictionary
@@ -271,7 +271,7 @@ Each user story phase is independently testable:
 
 ### Tests (TDD: Write First)
 
-- [ ] T163 [P] [US7] Write unit tests for history repository in rust-core/tests/unit/history_test.rs
+- [X] T163 [P] [US7] Write unit tests for history repository in rust-core/tests/unit/history_test.rs
 - [ ] T167 [P] [US7] Write widget tests for HistoryScreen in flutter-ui/test/screens/history_screen_test.dart
 
 ### Rust Core - History
