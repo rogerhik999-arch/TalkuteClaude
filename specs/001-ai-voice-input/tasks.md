@@ -55,7 +55,7 @@
 - [X] T015 [P] Create error types module in rust-core/src/error.rs
 - [X] T016 [P] Implement logging infrastructure with env_logger in rust-core/src/lib.rs
 - [X] T017 Create FFI bridge skeleton in rust-core/src/ffi/bridge.rs
-- [ ] T018 Generate initial Flutter bindings with flutter_rust_bridge_codegen
+- [X] T018 Generate initial Flutter bindings with flutter_rust_bridge_codegen
 - [X] T019 [P] Create Flutter app state management structure with Riverpod in flutter-ui/lib/state/app_state.dart
 - [X] T020 [P] Implement platform-specific initialization for Windows in platform/windows/
 - [X] T021 [P] Implement platform-specific initialization for macOS in platform/macos/
@@ -128,7 +128,7 @@ Remaining Phase 2 tasks:
 - [X] T052 [RED] [US1] Write tests for transcription FFI in rust-core/tests/ffi/transcription_test.rs
 - [X] T053 [GREEN] [US1] Create session management FFI functions in rust-core/src/ffi/bridge.rs (start_voice_session, stop_voice_session, cancel_voice_session, make T051 pass)
 - [X] T054 [GREEN] [US1] Create transcription FFI functions in rust-core/src/ffi/bridge.rs (transcribe_audio, polish_text, make T052 pass)
-- [ ] T055 [GREEN] [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
+- [X] T055 [GREEN] [US1] Regenerate Flutter bindings with flutter_rust_bridge_codegen
 
 #### Flutter UI (Test-First)
 - [X] T056 [RED] [P] [US1] Write widget tests for voice button in flutter-ui/test/widgets/voice_button_test.dart
@@ -243,7 +243,7 @@ Remaining Phase 2 tasks:
 - [X] T160 [GREEN] [US3] Create dictionary management FFI functions in rust-core/src/ffi/bridge.rs (add_dictionary_entry, remove_dictionary_entry, get_all_dictionary_entries, update_dictionary_entry, make T159 pass)
 
 #### Flutter Binding (Test-First)
-- [ ] T161 [GREEN] [US3] Regenerate Flutter bindings with flutter_rust_bridge_codegen
+- [X] T161 [GREEN] [US3] Regenerate Flutter bindings with flutter_rust_bridge_codegen
 
 #### Flutter UI (Test-First)
 - [X] T162 [GREEN] [P] [US3] Create PersonalDictionaryEntry Dart model in flutter-ui/lib/models/dictionary.dart
@@ -357,24 +357,24 @@ Remaining Phase 2 tasks:
 - [X] T209 [GREEN] Implement offline detection and fallback logic in rust-core/src/network/offline_handler.rs (make T208 pass)
 
 ### Non-Functional Requirements Validation (Constitution Compliance)
-- [ ] T210 [RED] Write performance benchmark tests in rust-core/tests/benchmarks/performance_test.rs
-- [ ] T211 [GREEN] Implement performance profiler in rust-core/src/tools/profiler.rs
-- [ ] T212 Run performance benchmarks and validate against constitution targets:
+- [X] T210 [RED] Write performance benchmark tests in rust-core/tests/benchmarks/performance_test.rs
+- [X] T211 [GREEN] Implement performance profiler in rust-core/src/tools/profiler.rs
+- [X] T212 Run performance benchmarks and validate against constitution targets:
   - Context detection <50ms (p95)
   - Memory footprint <100MB idle, <300MB active
   - UI rendering 60fps minimum
   - CPU usage <5% idle, <30% during AI processing
-- [ ] T213 [RED] Write security audit tests in rust-core/tests/security/audit_test.rs
+- [X] T213 [RED] Write security audit tests in rust-core/tests/security/audit_test.rs
 - [ ] T214 Run security audit: cargo audit, FFI boundary review, prompt injection tests, encryption validation
-- [ ] T215 [RED] Write accessibility tests in flutter-ui/test/accessibility/a11y_test.rs
+- [X] T215 [RED] Write accessibility tests in flutter-ui/test/accessibility/a11y_test.dart
 - [ ] T216 Run accessibility validation: screen reader compatibility, keyboard navigation, WCAG 2.1 AA compliance
-- [ ] T217 Document NFR validation results in docs/validation-report.md
+- [X] T217 Document NFR validation results in docs/validation-report.md
 
 ### Code Quality & Documentation
 - [ ] T218 Code cleanup and refactoring across all modules
 - [ ] T219 Performance optimization for <200ms UI response target
 - [ ] T220 Memory optimization for <100MB idle target
-- [ ] T221 [P] Update README.md with project overview and setup instructions
+- [X] T221 [P] Update README.md with project overview and setup instructions
 - [ ] T222 [P] Validate quickstart.md setup instructions
 - [ ] T223 Final security and privacy compliance review
 

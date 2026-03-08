@@ -15,6 +15,166 @@
 - Q: What level of error logging and diagnostics should be implemented? → A: Local logs only with optional anonymous crash reports
 - Q: How should the free tier usage limit be enforced? → A: Weekly word count limit (4,000 words/week) with soft reset
 
+### Session 2026-03-08 - Comprehensive Checklist Resolution
+
+#### Platform-Specific Requirements (CHK001, CHK002, CHK011, CHK024)
+
+- Q: How is voice input activated on each platform? → A:
+  - **Windows**: Global hotkey `Ctrl+Space` (push-to-talk or toggle mode), system tray icon context menu
+  - **macOS**: Global hotkey `Cmd+Space` (push-to-talk or toggle mode), menu bar icon context menu
+  - **Linux**: Global hotkey `Ctrl+Space` (X11 only), system tray icon context menu
+  - **iOS**: Custom keyboard extension with microphone button (tap-and-hold for push-to-talk, tap for toggle)
+  - **Android**: Custom IME with microphone button (tap-and-hold for push-to-talk, tap for toggle)
+
+- Q: What are microphone permission requirements per platform? → A:
+  - **Windows**: Windows Settings → Privacy → Microphone → "Allow apps to access microphone". If denied: Display error dialog with "Microphone access denied. Please enable in Windows Settings → Privacy → Microphone" and link to settings.
+  - **macOS**: System Preferences → Security & Privacy → Privacy → Microphone. If denied: Display error dialog with "Talkute needs microphone access. Please enable in System Preferences → Security & Privacy → Privacy → Microphone" and link to settings.
+  - **Linux**: PulseAudio/PipeWire configuration. If denied: Display error dialog with "Microphone not available. Please check PulseAudio/PipeWire configuration."
+  - **iOS**: iOS Settings → Privacy → Microphone. If denied: Display error dialog with "Talkute needs microphone access. Please enable in Settings → Privacy → Microphone" with deep link to settings.
+  - **Android**: Runtime permission request on first use. If denied: Display error dialog with "Microphone permission required for voice input" with button to request permission again.
+
+- Q: What are the default keyboard shortcuts per platform? → A:
+  - **Windows**: `Ctrl+Space` (customizable in settings)
+  - **macOS**: `Cmd+Space` (customizable in settings; conflicts with Spotlight - warn user)
+  - **Linux**: `Ctrl+Space` (customizable in settings; X11 only)
+  - **iOS/Android**: N/A - use on-screen buttons
+
+#### Offline & API Failure Handling (CHK004, CHK021, CHK022, CHK025)
+
+- Q: Is offline mode supported? → A: **Not in MVP**. MVP requires stable internet connection for cloud-based speech recognition. Future v2.0 will support local models (Whisper.cpp + local LLM). Current behavior:
+  - **No network**: Display "No internet connection. Voice input requires internet for speech recognition." with Retry button
+  - **Unstable network**: Queue audio locally for up to 30 seconds, attempt reconnection, notify user of delay
+
+- Q: How are speech API failures handled? → A:
+  - **Timeout (>10s)**: Display "Speech recognition timed out. Please try again." with Retry button
+  - **Rate limit exceeded**: Display "Service temporarily busy. Please wait a moment." with auto-retry countdown (5s)
+  - **Authentication error**: Display "Service configuration error. Please restart the app." with Contact Support option
+  - **Service unavailable**: Display "Speech service unavailable. Please try again later." with Retry button
+  - **Fallback behavior**: Return raw transcription (if available) without AI polishing
+
+- Q: How are AI polishing API failures handled? → A:
+  - **Timeout (>5s)**: Return raw transcription with notification "AI polishing unavailable - using raw transcription"
+  - **Rate limit**: Return raw transcription with notification "AI polishing temporarily limited"
+  - **Service error**: Return raw transcription, log error locally for debugging
+  - **Partial failure**: If polishing starts but fails mid-way, return partially polished text with notification
+
+- Q: How is network interruption during active session handled? → A:
+  - **During recording**: Continue recording locally (up to 30s buffer), attempt reconnection
+  - **During transcription**: Retry up to 3 times with exponential backoff (1s, 2s, 4s)
+  - **During AI polishing**: Return raw transcription with notification
+  - **Session data**: Save session state locally every 5 seconds for recovery
+
+#### Privacy vs Cloud API Alignment (CHK012)
+
+- Q: How do privacy requirements align with cloud API dependency? → A:
+  - **Voice data**: Sent to cloud API for transcription, processed and immediately discarded (zero retention)
+  - **Transcription text**: Sent to AI API for polishing, processed and immediately discarded
+  - **Personal dictionary**: Stored locally only, used for local post-processing, never sent to cloud
+  - **Usage data**: Word count tracked locally only, never sent to cloud
+  - **Crash reports**: Opt-in only, anonymized, no transcription content
+  - **User consent**: First launch displays clear explanation: "Voice input is processed by cloud services for transcription. Your voice data is not stored on servers after processing."
+
+#### Accessibility Requirements (CHK032)
+
+- Q: What accessibility requirements must be met? → A:
+  - **Keyboard navigation**: All UI elements accessible via Tab/Enter/Escape
+  - **Screen reader support**: All UI elements have ARIA labels (web) or accessibility labels (mobile)
+  - **High contrast mode**: Support Windows High Contrast, macOS Increase Contrast, Android High Contrast Text
+  - **Font scaling**: Support system font size preferences (up to 200%)
+  - **Focus indicators**: Visible focus outlines on all interactive elements
+  - **Color independence**: Information not conveyed by color alone (use icons, text labels)
+  - **Voice feedback**: Optional TTS for error messages and status changes
+
+#### Zero-State & Concurrent Sessions (CHK003, CHK005)
+
+- Q: How are zero-state scenarios handled? → A:
+  - **First launch**: Display onboarding tutorial (3 screens: 1) Activate voice input, 2) Speak naturally, 3) Review and edit)
+  - **No personal dictionary**: Show "Add your first term" prompt with example suggestions
+  - **No history**: Show "Your transcriptions will appear here" with example mock-up
+  - **Default settings**: Auto-process enabled, filler removal enabled, context-aware enabled
+
+- Q: How are concurrent sessions handled? → A:
+  - **Prevention**: Only one active session allowed; starting new session auto-cancels previous
+  - **Warning**: If previous session is processing, display "Cancel current transcription?" dialog
+  - **State preservation**: Save previous session to history before starting new
+
+#### Performance & Clarity (CHK006, CHK007, CHK008, CHK009, CHK010)
+
+- Q: What are the specific latency thresholds? → A:
+  - **p50 latency**: <100ms for context detection, <150ms for audio capture
+  - **p95 latency**: <50ms for context detection, <50ms for audio capture, <200ms UI response, <2s speech-to-text
+  - **p99 latency**: <200ms for context detection, <100ms for audio capture, <500ms UI response, <5s speech-to-text
+
+- Q: What are "normal conditions" for 95% accuracy? → A:
+  - **Noise level**: <60dB ambient noise (typical quiet office)
+  - **Microphone distance**: <1 meter from mouth
+  - **Speech rate**: 100-250 words per minute
+  - **Supported languages**: en-US, zh-CN, ja-JP, es-ES, fr-FR, de-DE
+  - **Accent tolerance**: Native or fluent speakers; accented speech may reduce accuracy by 5-10%
+
+- Q: What are the filler words for all supported languages? → A:
+  - **English**: um, uh, like, you know, sort of, kind of, basically, actually, literally, I mean, right, yeah, so, well
+  - **Chinese (zh-CN)**: 嗯, 啊, 额, 那个, 这个, 就是, 然后, 所以, 其实, 对吧, 是吧
+  - **Japanese (ja-JP)**: えっと, あの, その, まあ, なんか, そう, ですね
+  - **Spanish (es-ES)**: eh, este, o sea, bueno, pues, es que, digamos
+  - **French (fr-FR)**: euh, ben, bah, quoi, tu vois, genre, en fait
+  - **German (de-DE)**: äh, hm, also, eigentlich, sozusagen, gewissermaßen
+
+- Q: How is self-correction detected? → A:
+  - **Pattern**: "... no wait ..." / "... actually ..." / "... I mean ..." / "... let me rephrase ..."
+  - **Repetition**: Immediate word/phrase repetition with different content following
+  - **False start**: Incomplete phrase followed by complete rephrasing
+  - **Confidence**: Require 80% confidence in detection to apply; otherwise preserve original
+
+- Q: What is "appropriate tone" per application category? → A:
+  - **Email (Gmail, Outlook)**: Formal, professional, complete sentences
+  - **Chat (Slack, WhatsApp, Teams)**: Casual, concise, informal
+  - **Documents (Docs, Notion, Word)**: Structured, professional, clear
+  - **Code editors (VS Code, JetBrains)**: Technical, precise, code-aware formatting
+  - **AI tools (ChatGPT, Claude)**: Clear, well-structured prompts, logical flow
+
+#### Recovery & Data Management (CHK026-CHK029, CHK039, CHK040, CHK041, CHK042)
+
+- Q: How is session cancellation handled? → A:
+  - **User aborts mid-recording**: Discard recording, return to idle state, no history entry created
+  - **Confirmation**: Optional setting to require confirmation before discarding long recordings (>30s)
+
+- Q: How are partial transcription failures recovered? → A:
+  - **Speech succeeds, AI fails**: Return raw transcription with notification
+  - **Partial speech result**: Return available text with notification "Partial transcription - some audio was unclear"
+  - **Recovery option**: "Retry AI polishing" button in history entry
+
+- Q: How are incorrect dictionary entries handled? → A:
+  - **Edit**: User can edit any dictionary entry at any time
+  - **Delete**: User can delete entries; deleted terms no longer affect transcription
+  - **Undo**: 30-second undo window after deletion, accessible via notification
+
+- Q: How is data recovered after app crash? → A:
+  - **Auto-save**: Session data saved every 5 seconds during active recording
+  - **Recovery prompt**: On restart, display "Recover unsaved transcription?" if crash detected
+  - **History integrity**: SQLite WAL mode ensures database consistency
+
+- Q: What is the maximum personal dictionary size? → A:
+  - **Minimum**: 1,000 terms (guaranteed)
+  - **Maximum**: 10,000 terms (recommended upper limit)
+  - **Performance**: Dictionary lookup must complete in <10ms regardless of size
+
+- Q: How is the 5-minute session limit handled? → A:
+  - **Warning**: Display countdown at 4:30 with "Session ending in 30 seconds"
+  - **Auto-finalize**: At 5:00, automatically stop recording and process transcription
+  - **Notification**: "Session limit reached (5 min). Your transcription is ready."
+  - **Continue option**: User can start new session immediately
+
+- Q: How are extremely long utterances handled? → A:
+  - **Sentence splitting**: Split at natural pauses (>1.5s) for incremental processing
+  - **Memory limit**: Hard limit of 10,000 words per utterance; notify user if exceeded
+  - **Segmentation**: Display progress indicator for long transcriptions
+
+- Q: How is rapid application switching handled? → A:
+  - **Context detection**: Re-detect context every 500ms during recording
+  - **Tone adjustment**: Apply tone based on final active application at session end
+  - **Notification**: "Tone adapted for [App Name]" when context changes
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Real-time Voice to Polished Text (Priority: P1)

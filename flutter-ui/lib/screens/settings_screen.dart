@@ -282,25 +282,6 @@ class SettingsScreen extends ConsumerWidget {
 
           const Divider(),
 
-          // Data section
-          _buildSectionHeader('Data'),
-          ListTile(
-            leading: const Icon(Icons.file_download_outlined),
-            title: const Text('Export Data'),
-            subtitle: const Text('Download your history and dictionary'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _exportData(context),
-          ),
-          ListTile(
-            leading: const Icon(Icons.file_upload_outlined),
-            title: const Text('Import Dictionary'),
-            subtitle: const Text('Import dictionary entries from file'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _importDictionary(context),
-          ),
-
-          const Divider(),
-
           // About section
           _buildSectionHeader('About'),
           ListTile(
