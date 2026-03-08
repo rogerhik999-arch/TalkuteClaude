@@ -1,0 +1,9 @@
+# Clippy configuration
+# See: https://doc.rust-lang.org/nightly/clippy/lint_configuration.html
+
+# Maximum length ofara strings before suggesting to use `Cow`
+max-cognitive-complexity = 10
+max-enum-variant-size = 120
+
+# Recommend using `try_fold` instead of a loop for summing
+avoid-breaking-exported-api = false

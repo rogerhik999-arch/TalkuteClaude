@@ -1,0 +1,432 @@
+//! Personal dictionary storage module
+//!
+//! Manages CRUD operations for personal dictionary entries.
+
+use crate::storage::database::Database;
+use crate::storage::models::{PersonalDictionaryEntry, DictionaryEntryCategory};
+use crate::error::{Result, Error, StorageError};
+use rusqlite::params;
+use chrono::{DateTime, Utc};
+use regex::Regex;
+
+/// Personal dictionary storage service
+pub struct DictionaryStorage<'a> {
+    db: &'a Database,
+}
+
+impl<'a> DictionaryStorage<'a> {
+    /// Create new dictionary storage
+    pub fn new(db: &'a Database) -> Self {
+        Self { db }
+    }
+
+    /// Add a dictionary entry
+    pub fn add_entry(&self, entry: &PersonalDictionaryEntry) -> Result<String> {
+        let entry_id = entry.entry_id.clone();
+
+        self.db.connection().execute(
+            "INSERT OR REPLACE INTO personal_dictionary
+             (entry_id, device_id, phrase, replacement, case_sensitive, whole_word_only, category, created_at, last_used_at, usage_count)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+            params![
+                entry.entry_id,
+                entry.device_id,
+                entry.phrase,
+                entry.replacement,
+                entry.case_sensitive as i32,
+                entry.whole_word_only as i32,
+                entry.category.as_str(),
+                entry.created_at.to_rfc3339(),
+                entry.last_used_at.map(|t| t.to_rfc3339()),
+                entry.usage_count,
+            ],
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        Ok(entry_id)
+    }
+
+    /// Get all dictionary entries for a device
+    pub fn get_all_entries(&self, device_id: &str) -> Result<Vec<PersonalDictionaryEntry>> {
+        let mut stmt = self.db.connection().prepare(
+            "SELECT entry_id, device_id, phrase, replacement, case_sensitive, whole_word_only, category, created_at, last_used_at, usage_count
+             FROM personal_dictionary WHERE device_id = ?1 ORDER BY created_at DESC"
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        let entries = stmt.query_map(params![device_id], row_to_entry)
+            .map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        let mut result = Vec::new();
+        for entry in entries {
+            result.push(entry.map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?);
+        }
+
+        Ok(result)
+    }
+
+    /// Get a dictionary entry by ID
+    pub fn get_entry_by_id(&self, entry_id: &str, device_id: &str) -> Result<Option<PersonalDictionaryEntry>> {
+        let mut stmt = self.db.connection().prepare(
+            "SELECT entry_id, device_id, phrase, replacement, case_sensitive, whole_word_only, category, created_at, last_used_at, usage_count
+             FROM personal_dictionary WHERE entry_id = ?1 AND device_id = ?2"
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        let mut entries = stmt.query_map(params![entry_id, device_id], row_to_entry)
+            .map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        match entries.next() {
+            Some(entry) => Ok(Some(entry.map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?)),
+            None => Ok(None),
+        }
+    }
+
+    /// Remove a dictionary entry
+    pub fn remove_entry(&self, entry_id: &str, device_id: &str) -> Result<()> {
+        self.db.connection().execute(
+            "DELETE FROM personal_dictionary WHERE entry_id = ?1 AND device_id = ?2",
+            params![entry_id, device_id],
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        Ok(())
+    }
+
+    /// Update a dictionary entry
+    pub fn update_entry(
+        &self,
+        entry_id: &str,
+        device_id: &str,
+        phrase: Option<&str>,
+        replacement: Option<&str>,
+        case_sensitive: Option<bool>,
+        category: Option<DictionaryEntryCategory>,
+    ) -> Result<()> {
+        let mut updates = Vec::new();
+        let mut values: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+        if let Some(p) = phrase {
+            updates.push("phrase = ?");
+            values.push(Box::new(p.to_string()));
+        }
+        if let Some(r) = replacement {
+            updates.push("replacement = ?");
+            values.push(Box::new(r.to_string()));
+        }
+        if let Some(c) = case_sensitive {
+            updates.push("case_sensitive = ?");
+            values.push(Box::new(c as i32));
+        }
+        if let Some(cat) = category {
+            updates.push("category = ?");
+            values.push(Box::new(cat.as_str().to_string()));
+        }
+
+        if updates.is_empty() {
+            return Ok(());
+        }
+
+        let sql = format!(
+            "UPDATE personal_dictionary SET {} WHERE entry_id = ? AND device_id = ?",
+            updates.join(", ")
+        );
+
+        values.push(Box::new(entry_id.to_string()));
+        values.push(Box::new(device_id.to_string()));
+
+        let params: Vec<&dyn rusqlite::ToSql> = values.iter().map(|v| v.as_ref()).collect();
+
+        self.db.connection().execute(&sql, params.as_slice())
+            .map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        Ok(())
+    }
+
+    /// Increment usage count for an entry
+    pub fn increment_usage(&self, entry_id: &str, device_id: &str) -> Result<()> {
+        self.db.connection().execute(
+            "UPDATE personal_dictionary SET usage_count = usage_count + 1, last_used_at = ?1 WHERE entry_id = ?2 AND device_id = ?3",
+            params![Utc::now().to_rfc3339(), entry_id, device_id],
+        ).map_err(|e| Error::Storage(StorageError::QueryFailed(e.to_string())))?;
+
+        Ok(())
+    }
+
+    /// Export dictionary entries to JSON format
+    ///
+    /// Returns a JSON array of dictionary entries suitable for backup or transfer.
+    pub fn export_to_json(&self, device_id: &str) -> Result<String> {
+        let entries = self.get_all_entries(device_id)?;
+
+        let export_entries: Vec<ExportEntry> = entries
+            .into_iter()
+            .map(|e| ExportEntry {
+                phrase: e.phrase,
+                replacement: e.replacement,
+                category: e.category.as_str().to_string(),
+                case_sensitive: e.case_sensitive,
+                whole_word_only: e.whole_word_only,
+            })
+            .collect();
+
+        serde_json::to_string_pretty(&export_entries)
+            .map_err(|e| Error::Storage(StorageError::SerializationFailed(e.to_string())))
+    }
+
+    /// Import dictionary entries from JSON format
+    ///
+    /// Returns the number of entries successfully imported.
+    /// Entries are assigned new IDs and associated with the specified device.
+    pub fn import_from_json(&self, device_id: &str, json: &str) -> Result<usize> {
+        let import_entries: Vec<ImportEntry> = serde_json::from_str(json)
+            .map_err(|e| Error::Storage(StorageError::DeserializationFailed(e.to_string())))?;
+
+        let mut count = 0;
+        for entry in import_entries {
+            // Skip entries missing required fields
+            if entry.phrase.is_empty() || entry.replacement.is_empty() {
+                continue;
+            }
+
+            let new_entry = PersonalDictionaryEntry {
+                entry_id: format!("entry-{}", uuid::Uuid::new_v4()),
+                device_id: device_id.to_string(),
+                phrase: entry.phrase,
+                replacement: entry.replacement,
+                case_sensitive: entry.case_sensitive,
+                whole_word_only: entry.whole_word_only,
+                category: entry.category,
+                created_at: Utc::now(),
+                last_used_at: None,
+                usage_count: 0,
+            };
+
+            match self.add_entry(&new_entry) {
+                Ok(_) => count += 1,
+                Err(_) => continue, // Skip entries that fail to add
+            }
+        }
+
+        Ok(count)
+    }
+}
+
+/// Convert a database row to a PersonalDictionaryEntry
+fn row_to_entry(row: &rusqlite::Row) -> rusqlite::Result<PersonalDictionaryEntry> {
+    let case_sensitive: i32 = row.get(4)?;
+    let whole_word_only: i32 = row.get(5)?;
+    let category_str: String = row.get(6)?;
+    let created_at_str: String = row.get(7)?;
+    let last_used_at_str: Option<String> = row.get(8)?;
+
+    Ok(PersonalDictionaryEntry {
+        entry_id: row.get(0)?,
+        device_id: row.get(1)?,
+        phrase: row.get(2)?,
+        replacement: row.get(3)?,
+        case_sensitive: case_sensitive != 0,
+        whole_word_only: whole_word_only != 0,
+        category: parse_category(&category_str),
+        created_at: parse_datetime(&created_at_str).unwrap_or_else(Utc::now),
+        last_used_at: last_used_at_str
+            .as_ref()
+            .and_then(|s| parse_datetime(s)),
+        usage_count: row.get(9)?,
+    })
+}
+
+/// Parse category string to enum
+#[inline]
+fn parse_category(s: &str) -> DictionaryEntryCategory {
+    match s {
+        "technical" => DictionaryEntryCategory::Technical,
+        "business" => DictionaryEntryCategory::Business,
+        "medical" => DictionaryEntryCategory::Medical,
+        _ => DictionaryEntryCategory::General,
+    }
+}
+
+/// Parse RFC3339 datetime string
+#[inline]
+fn parse_datetime(s: &str) -> Option<DateTime<Utc>> {
+    DateTime::parse_from_rfc3339(s)
+        .ok()
+        .map(|dt| dt.with_timezone(&Utc))
+}
+
+/// Entry format for JSON export
+#[derive(serde::Serialize)]
+struct ExportEntry {
+    phrase: String,
+    replacement: String,
+    category: String,
+    case_sensitive: bool,
+    whole_word_only: bool,
+}
+
+/// Entry format for JSON import
+#[derive(serde::Deserialize)]
+struct ImportEntry {
+    #[serde(default)]
+    phrase: String,
+    #[serde(default)]
+    replacement: String,
+    #[serde(default)]
+    category: DictionaryEntryCategory,
+    #[serde(default)]
+    case_sensitive: bool,
+    #[serde(default = "default_whole_word")]
+    whole_word_only: bool,
+}
+
+fn default_whole_word() -> bool {
+    true
+}
+
+/// Apply dictionary entries to text
+///
+/// This function replaces phrases in the text according to dictionary entries.
+/// Longer, more specific phrases are applied first to avoid partial matches.
+pub fn apply_dictionary_to_text(text: &str, entries: &[PersonalDictionaryEntry]) -> String {
+    if entries.is_empty() {
+        return text.to_string();
+    }
+
+    // Create indices sorted by phrase length (descending) to avoid cloning entries
+    let mut indices: Vec<usize> = (0..entries.len()).collect();
+    indices.sort_by(|&a, &b| entries[b].phrase.len().cmp(&entries[a].phrase.len()));
+
+    let mut result = text.to_string();
+
+    for idx in indices {
+        let entry = &entries[idx];
+        if entry.phrase.is_empty() {
+            continue;
+        }
+
+        result = apply_single_entry(&result, entry);
+    }
+
+    result
+}
+
+/// Apply a single dictionary entry to text
+#[inline]
+fn apply_single_entry(text: &str, entry: &PersonalDictionaryEntry) -> String {
+    if entry.whole_word_only {
+        let pattern = if entry.case_sensitive {
+            format!(r"\b{}\b", regex::escape(&entry.phrase))
+        } else {
+            format!(r"(?i)\b{}\b", regex::escape(&entry.phrase))
+        };
+
+        match Regex::new(&pattern) {
+            Ok(re) => re.replace_all(text, entry.replacement.as_str()).into_owned(),
+            Err(_) => text.to_string(),
+        }
+    } else if entry.case_sensitive {
+        text.replace(&entry.phrase, &entry.replacement)
+    } else {
+        let pattern = format!(r"(?i){}", regex::escape(&entry.phrase));
+        match Regex::new(&pattern) {
+            Ok(re) => re.replace_all(text, entry.replacement.as_str()).into_owned(),
+            Err(_) => text.to_string(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_apply_dictionary_simple() {
+        let text = "I need to API the server";
+        let entries = vec![
+            PersonalDictionaryEntry {
+                entry_id: "1".to_string(),
+                device_id: "test".to_string(),
+                phrase: "API".to_string(),
+                replacement: "Application Programming Interface".to_string(),
+                case_sensitive: false,
+                whole_word_only: true,
+                category: DictionaryEntryCategory::Technical,
+                created_at: Utc::now(),
+                last_used_at: None,
+                usage_count: 0,
+            },
+        ];
+        let result = apply_dictionary_to_text(text, &entries);
+        assert_eq!(result, "I need to Application Programming Interface the server");
+    }
+
+    #[test]
+    fn test_apply_dictionary_multiple() {
+        let text = "Use the API and CI/CD pipeline";
+        let entries = vec![
+            PersonalDictionaryEntry {
+                entry_id: "1".to_string(),
+                device_id: "test".to_string(),
+                phrase: "API".to_string(),
+                replacement: "Application Programming Interface".to_string(),
+                case_sensitive: false,
+                whole_word_only: true,
+                category: DictionaryEntryCategory::Technical,
+                created_at: Utc::now(),
+                last_used_at: None,
+                usage_count: 0,
+            },
+            PersonalDictionaryEntry {
+                entry_id: "2".to_string(),
+                device_id: "test".to_string(),
+                phrase: "CI/CD".to_string(),
+                replacement: "Continuous Integration/Continuous Deployment".to_string(),
+                case_sensitive: true,
+                whole_word_only: false,
+                category: DictionaryEntryCategory::Technical,
+                created_at: Utc::now(),
+                last_used_at: None,
+                usage_count: 0,
+            },
+        ];
+        let result = apply_dictionary_to_text(text, &entries);
+        assert!(result.contains("Application Programming Interface"));
+        assert!(result.contains("Continuous Integration/Continuous Deployment"));
+    }
+
+    #[test]
+    fn test_apply_dictionary_case_sensitive() {
+        let text = "The API and api are different";
+        let entries = vec![
+            PersonalDictionaryEntry {
+                entry_id: "1".to_string(),
+                device_id: "test".to_string(),
+                phrase: "API".to_string(),
+                replacement: "Application Programming Interface".to_string(),
+                case_sensitive: true,
+                whole_word_only: true,
+                category: DictionaryEntryCategory::Technical,
+                created_at: Utc::now(),
+                last_used_at: None,
+                usage_count: 0,
+            },
+        ];
+        let result = apply_dictionary_to_text(text, &entries);
+        assert!(result.contains("Application Programming Interface"));
+        assert!(result.contains("api")); // lowercase should remain
+    }
+
+    #[test]
+    fn test_apply_dictionary_no_entries() {
+        let text = "No changes here";
+        let entries: Vec<PersonalDictionaryEntry> = vec![];
+        let result = apply_dictionary_to_text(text, &entries);
+        assert_eq!(result, text);
+    }
+
+    #[test]
+    fn test_parse_category() {
+        assert_eq!(parse_category("technical"), DictionaryEntryCategory::Technical);
+        assert_eq!(parse_category("business"), DictionaryEntryCategory::Business);
+        assert_eq!(parse_category("medical"), DictionaryEntryCategory::Medical);
+        assert_eq!(parse_category("general"), DictionaryEntryCategory::General);
+        assert_eq!(parse_category("unknown"), DictionaryEntryCategory::General);
+    }
+}

@@ -124,44 +124,80 @@ Power users want to use voice commands to edit, transform, and query text withou
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide real-time voice-to-text transcription with end-to-end latency under 500ms (p95) using cloud-based third-party speech recognition API
-- **FR-002**: System MUST achieve transcription accuracy of 95% or higher in normal conditions (quiet environment, clear speech)
-- **FR-003**: System MUST automatically remove common filler words in supported languages (English: um, uh, like, you know; Chinese: 嗯, 啊, 额, 那个)
-- **FR-004**: System MUST detect and apply self-corrections when user changes their statement mid-sentence
-- **FR-005**: System MUST eliminate repetitions caused by stuttering or hesitation while preserving intentional repetitions
-- **FR-006**: System MUST optimize spoken language to written language while preserving original meaning and user's voice
-- **FR-007**: System MUST automatically detect and format lists, steps, and structured content
-- **FR-008**: System MUST detect current application context and adapt output tone accordingly (formal for email, casual for chat, structured for documents)
-- **FR-009**: System MUST support user-defined personal dictionary with minimum 1000 custom terms per user
-- **FR-010**: System MUST allow batch import/export of personal dictionary terms
-- **FR-011**: System MUST support 100+ languages for voice input with automatic language detection via cloud API
-- **FR-012**: System MUST support mixed-language input (code-switching) and handle appropriately
-- **FR-013**: System MUST provide optional real-time translation to user-selected target languages
-- **FR-014**: System MUST support voice commands for text editing (shorten, expand, change tone, summarize)
-- **FR-015**: System MUST support whisper mode for low-volume voice input in privacy-sensitive environments
-- **FR-016**: System MUST work as system-level input method across all applications with text input fields
-- **FR-017**: System MUST support all major platforms: macOS, Windows, iOS, Android, Web
-- **FR-018**: System MUST provide visual feedback during voice input (recording indicator, real-time transcription preview)
-- **FR-019**: System MUST allow users to review and edit transcribed text before final insertion
-- **FR-020**: System MUST maintain local history of voice inputs for user reference (stored locally only)
+- **FR-001**: System MUST capture voice input with <50ms latency (p95) from microphone to buffer
+- **FR-002**: System MUST transcribe speech to text with <200ms UI response time (p95) from speech end to text display, achieving 95% accuracy (WER <5%) in normal conditions (quiet environment, clear speech)
+- **FR-003**: System MUST clean transcription by removing:
+  - **Filler words**: um, uh, like, you know, sort of, kind of (English); 嗯, 啊, 额, 那个 (Chinese)
+  - **Self-corrections**: Detected false starts and repeated phrases (e.g., "I want to... I need to" → "I need to")
+  - **Excessive pauses**: Normalize long pauses to single space
+  - **User Control**: Configurable via settings (enabled by default)
+- **FR-004**: System MUST eliminate repetitions caused by stuttering or hesitation while preserving intentional repetitions
+- **FR-005**: System MUST optimize spoken language to written language while preserving original meaning and user's voice
+- **FR-006**: System MUST automatically detect and format lists, steps, and structured content
+- **FR-007**: System MUST detect current application context and adapt output tone accordingly (formal for email, casual for chat, structured for documents)
+- **FR-008**: System MUST support user-defined personal dictionary with minimum 1000 custom terms per user
+- **FR-009**: System MUST allow batch import/export of personal dictionary terms
+- **FR-010**: System MUST support multiple languages (en-US, zh-CN, ja-JP, es-ES, fr-FR, de-DE) via cloud APIs with automatic language detection
+  - **Future**: Local model support planned for v2.0 (offline operation with Whisper.cpp + local LLM)
+- **FR-011**: System MUST support mixed-language input (code-switching) and handle appropriately
+- **FR-012**: System MUST provide optional real-time translation to user-selected target languages
+- **FR-013**: System MUST support voice commands for text editing (shorten, expand, change tone, summarize)
+- **FR-014**: System MUST support whisper mode for low-volume voice input in privacy-sensitive environments
+- **FR-015**: System MUST work as system-level input method across all applications with text input fields
+- **FR-016**: System MUST support all major platforms: macOS, Windows, iOS, Android, Linux
+- **FR-017**: System MUST provide visual feedback during voice input (recording indicator, real-time transcription preview)
+- **FR-018**: System MUST allow users to review and edit transcribed text before final insertion
+- **FR-019**: System MUST maintain local history of voice inputs for user reference (stored locally only)
+- **FR-020**: System MUST store all data securely on device with no cloud sync:
+  - **Encryption**: SQLite database encrypted using SQLCipher with AES-256-CBC
+  - **Key Derivation**: PBKDF2 with device-unique salt (10,000 iterations)
+  - **Key Storage**: Platform keychain (Windows Credential Manager, macOS Keychain, Linux Secret Service, iOS Keychain, Android Keystore)
+  - **At-Rest Protection**: Database file encrypted when app not running
+  - **In-Memory Protection**: Sensitive data cleared from memory after use
 - **FR-021**: System MUST implement zero data retention policy - no voice data stored on servers after processing (cloud API processes and discards immediately)
-- **FR-022**: System MUST encrypt all data in transit and at rest
-- **FR-023**: System MUST provide clear privacy controls including crash reporting opt-in/opt-out and allow users to delete local history and logs
-- **FR-024**: System MUST handle network interruptions gracefully with local queuing and retry logic (cloud API dependency requires connectivity)
-- **FR-025**: System MUST provide keyboard shortcuts for activating/deactivating voice input
-- **FR-026**: System MUST support push-to-talk and voice-activated modes
-- **FR-027**: System MUST provide audio level monitoring to help users optimize microphone positioning
-- **FR-028**: System MUST support multiple microphone inputs and allow user selection
-- **FR-029**: System MUST implement noise cancellation for background sound filtering
-- **FR-030**: System MUST provide usage analytics (words transcribed, time saved) visible only to user locally
-- **FR-031**: System MUST operate without user authentication - all functionality available anonymously with local device-based storage
-- **FR-032**: System MUST limit single continuous voice input sessions to 5 minutes maximum duration, automatically finalizing session at limit
-- **FR-033**: System MUST maintain local error logs for debugging purposes, stored on device only
-- **FR-034**: System MUST provide optional anonymous crash reporting that users can enable/disable in settings
-- **FR-035**: System MUST ensure crash reports contain no personally identifiable information or voice data
-- **FR-036**: System MUST enforce free tier usage limit of 4,000 words per week with automatic weekly reset
-- **FR-037**: System MUST track word count locally per device and display remaining quota to users
-- **FR-038**: System MUST notify users when approaching (90%) and reaching (100%) free tier limit
+- **FR-022**: System MUST provide clear privacy controls including crash reporting opt-in/opt-out and allow users to delete local history and logs
+- **FR-023**: System MUST degrade gracefully when AI services unavailable:
+  - **Offline Mode**: Display "AI services unavailable" notification with retry option
+  - **Fallback Behavior**: Return raw transcription without AI polishing
+  - **Cached Results**: Use last successful context detection for 5 minutes
+  - **User Control**: Allow manual retry or cancel operation
+  - **State Persistence**: Save session data locally for retry when connection restored
+- **FR-024**: System MUST provide keyboard shortcuts for activating/deactivating voice input
+- **FR-025**: System MUST support push-to-talk and voice-activated modes
+- **FR-026**: System MUST provide audio level monitoring to help users optimize microphone positioning
+- **FR-027**: System MUST support multiple microphone inputs and allow user selection
+- **FR-028**: System MUST implement noise cancellation for background sound filtering
+- **FR-029**: System MUST provide usage analytics (words transcribed, time saved) visible only to user locally
+- **FR-030**: System MUST operate without user authentication - all functionality available anonymously with local device-based storage
+- **FR-031**: System MUST limit single continuous voice input sessions to 5 minutes maximum duration, automatically finalizing session at limit
+- **FR-032**: System MUST maintain local error logs for debugging purposes, stored on device only
+- **FR-033**: System MUST provide optional anonymous crash reporting that users can enable/disable in settings:
+  - **Data Collected**: Stack traces, device info, app version, OS version
+  - **Data Excluded**: NO transcription content, NO voice data, NO personally identifiable information
+  - **User Control**: Opt-in only (disabled by default)
+- **FR-034**: System MUST enforce free tier usage limit of 4,000 words per week with automatic weekly reset (Monday 00:00 local device time)
+- **FR-035**: System MUST track word count locally per device and display remaining quota to users
+- **FR-036**: System MUST notify users when approaching (90%) and reaching (100%) free tier limit
+
+### Non-Functional Requirements
+
+- **NFR-001**: Performance - System MUST maintain responsive user experience across all platforms
+- **NFR-002**: Latency - End-to-end voice processing MUST complete within acceptable time bounds
+- **NFR-003**: Memory - System MUST operate within constrained memory footprint
+- **NFR-004**: Cross-platform - System MUST provide consistent functionality across Windows, macOS, Linux, iOS, Android
+- **NFR-005**: Accessibility - System MUST comply with WCAG 2.1 AA standards for all UI components
+- **NFR-006**: Security - System MUST protect user data with industry-standard encryption and secure storage
+- **NFR-007**: Privacy - System MUST implement zero-knowledge architecture with no cloud data retention
+- **NFR-008**: Real-time Performance Targets (Constitution Compliance)
+  - Context detection: <50ms (p95)
+  - Audio capture latency: <50ms (p95)
+  - UI response time: <200ms (p95) from user action to visual feedback
+  - Speech-to-text streaming: <2s (p95) for network API calls
+  - AI prompt preparation: <20ms (p95)
+  - UI rendering: 60fps minimum, 120fps target
+  - Memory footprint: <100MB idle, <300MB active
+  - CPU usage: <5% idle, <30% during AI processing
+  - Disk footprint: <50MB installation size (excluding AI models)
 
 ### Key Entities
 
@@ -193,6 +229,14 @@ Power users want to use voice commands to edit, transform, and query text withou
 - **SC-013**: Net Promoter Score (NPS) exceeds 50 indicating strong user satisfaction
 - **SC-014**: Support ticket volume related to transcription accuracy is less than 5% of active devices per month
 - **SC-015**: Cross-platform experience consistency score exceeds 90% (users rate experience as "consistent" across devices, though settings don't sync)
+
+## Out of Scope (Future Releases)
+
+- **User Story 5 (AI Assistant Commands)**: Voice-activated system commands deferred to v2.0
+  - **Rationale**: Core voice-to-text enhancement (US1-US4) provides immediate value; command execution requires OS-level permissions and extensive security review
+  - **Affected Requirements**: FR-013 (voice commands for text editing)
+  - **Timeline**: Target for Q3 2026 release after MVP validation
+  - **Complexity**: Requires wake word detection, command parsing, execution engine, and custom command registry
 
 ### Assumptions
 

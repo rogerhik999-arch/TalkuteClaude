@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- keyboard_layout.xml -->
+<!-- Talkute Keyboard Layout for Android IME -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:padding="8dp">
+
+    <!-- Top bar with status and controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/intensity_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Standard"
+            android:textSize="12sp"
+            android:textColor="#666666" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/next_keyboard_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ABC"
+            android:textSize="14sp"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+    </LinearLayout>
+
+    <!-- Main keyboard area with microphone button -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <ImageButton
+            android:id="@+id/mic_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:background="@drawable/mic_button_background"
+            android:scaleType="centerInside"
+            android:contentDescription="Microphone button" />
+
+        <TextView
+            android:id="@+id/recording_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mic_button"
+            android:layout_centerHorizontal="true"
+            android:text="Tap to dictate"
+            android:textSize="14sp"
+            android:textColor="#999999" />
+
+    </RelativeLayout>
+
+    <!-- Bottom action bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="8dp">
+
+        <ImageButton
+            android:id="@+id/translate_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_upload"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Translate" />
+
+        <ImageButton
+            android:id="@+id/settings_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Settings" />
+
+    </LinearLayout>
+
+</LinearLayout>

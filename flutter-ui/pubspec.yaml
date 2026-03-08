@@ -1,0 +1,37 @@
+name: talkute
+description: AI Voice Input Assistant with Context-Aware Tone Adaptation
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_rust_bridge: ^2.11.0
+  flutter_riverpod: ^2.4.0
+  riverpod: ^2.4.0
+  riverpod_annotation: ^2.2.0
+  uuid: ^4.3.3
+  path: ^1.8.0
+  shared_preferences: ^2.2.0
+  http: ^1.1.0
+  flutter_animate: ^4.3.0
+  equatable: ^2.0.5
+  window_manager: ^0.3.8
+  flutter_local_notifications: ^16.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  riverpod_generator: ^2.2.0
+  build_runner: ^2.4.7
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/

@@ -46,6 +46,21 @@ Verify compliance with `.specify/memory/constitution.md`:
 - [x] **Minimal & Elegant Design**: 5 core modules planned: (1) UI, (2) Core Logic, (3) AI Integration, (4) Context Detection, (5) Platform Adapters
 - [x] **Test-First Development**: TDD workflow with ≥80% coverage for Rust core, unit/integration/E2E tests planned
 
+### Performance Standards Validation (Constitution §Performance Standards)
+
+**Response Time Requirements**:
+- [ ] Context detection: <50ms (p95) - **Validation**: Benchmark in Phase 8 (T122)
+- [ ] AI prompt preparation: <20ms (p95) - **Validation**: Benchmark in Phase 8 (T122)
+- [ ] LLM API call: <2s (p95, network-dependent) - **Validation**: Integration tests with timeout
+- [ ] UI rendering: 60fps minimum, 120fps target - **Validation**: Flutter DevTools profiling
+- [ ] Memory footprint: <100MB idle, <300MB active - **Validation**: Memory profiler in Phase 8 (T122)
+
+**Resource Constraints**:
+- [ ] CPU: <5% idle, <30% during AI processing - **Validation**: System monitor integration (T122)
+- [ ] Disk: <50MB installation size (excluding AI models) - **Validation**: Build artifact size check
+
+**Acceptance Criteria**: All performance targets must be met on reference hardware (mid-range 2023 devices) before production release.
+
 **Complexity Violations**: None - architecture aligns with all constitutional principles.
 
 ## Project Structure

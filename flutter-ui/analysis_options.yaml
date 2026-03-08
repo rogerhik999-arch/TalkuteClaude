@@ -1,0 +1,104 @@
+# Flutter/Dart analysis options
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-inference: true
+    strict-raw-types: true
+
+  errors:
+    deprecated_member_use: ignore
+    deprecated_member_use_from_same_package: ignore
+
+  exclude:
+    - "lib/generated_plugin_*.dart"
+    - "lib/bridge_generated.dart"
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    # Style
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
+    - prefer_final_locals
+    - prefer_single_quotes
+    - sort_child_properties_last
+
+    # Errors
+    - avoid_empty_else
+    - avoid_init_to_null
+    - avoid_slow_async_io
+    - avoid_types_as_parameter_names
+    - cancel_subscriptions
+    - close_sinks
+    - control_flow_in_finally
+    - empty_statements
+    - hash_and_equals
+    - no_adjacent_strings_in_list
+    - no_duplicate_case_values
+    - null_closures
+    - test_types_in_equals
+    - throw_in_finally
+    - unrelated_type_equality_checks
+    - valid_regexps
+
+    # Best practices
+    - annotate_overrides
+    - avoid_unnecessary_containers
+    - await_only_futures
+    - camel_case_extensions
+    - constant_identifier_names
+    - directives_ordering
+    - file_names
+    - library_names
+    - library_prefixes
+    - non_constant_identifier_names
+    - package_names
+    - prefer_adjacent_string_concatenation
+    - prefer_asserts_in_initializer_lists
+    - prefer_contains
+        - prefer_expression_function_bodies
+    - prefer_final_fields
+    - prefer_if_elements_to_conditional_expressions
+    - prefer_interpolation_to_compose_strings
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - prefer_relative_imports
+    - prefer_typing_uninitialized_variables
+    - prefer_void_to_null
+    - provide_deprecation_message
+    - unnecessary_await_in_return
+    - unnecessary_brace_in_string_interps
+    - unnecessary_breaks
+    - unnecessary_const
+    - unnecessary_constructor_name
+    - unnecessary_getters_setters
+    - unnecessary_lambdas
+    - unnecessary_late
+    - unnecessary_library_directive
+    - unnecessary_new
+    - unnecessary_null_aware_assignments
+    - unnecessary_null_checks
+    - unnecessary_parenthesis
+    - unnecessary_raw_strings
+    - unnecessary_statements
+    - unnecessary_string_escapes
+    - unnecessary_this
+    - unnecessary_to_list_in_spreads
+    - use_colored_box
+    - use_decorated_box
+    - use_full_hex_values_for_flutter_colors
+    - use_function_type_syntax_for_parameters
+    - use_is_even_rather_than_modulo
+    - use_key_in_widget_constructors
+    - use_late_for_private_fields_and_variables
+    - use_named_constants
+    - use_raw_strings
+    - use_rethrow_when_possible
+    - use_setters_to_change_properties
+    - use_string_buffers
+    - use_string_in_part_of_directives
+    - use_super_parameters
+    - use_test_throws_matchers
+        - void_checks

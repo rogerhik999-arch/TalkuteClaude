@@ -1,0 +1,28 @@
+# Rust formatting configuration
+edition = "2021"
+max_width = 100
+tab_spaces = 4
+use_field_init_shorthand = true
+use_try_shorthand = true
+
+# Import configuration
+reorder_imports = true
+reorder_modules = true
+
+# Format code blocks
+format_code_in_doc_comments = true
+format_macro_bodies = true
+
+# ControlWritingMode
+wrap_comments = true
+comment_width = 80
+
+# Match formatting
+match_arm_blocks = true
+match_arm_leading_pipes = "Never"
+force_multiline_blocks = false
+
+# Function formatting
+fn_params_layout = "Vertical"
+force_explicit_abi = true
+hard_tabs = false

@@ -1,0 +1,178 @@
+[package]
+name = "talkute-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Talkute Team"]
+
+[lib]
+name = "talkute_core"
+path = "src/lib.rs"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# SQLite
+rusqlite = { version = "0.30", features = ["bundled", "chrono"] }
+
+# UUID
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+env_logger = "0.10"
+log = "0.4"
+
+# FFI bindings
+flutter_rust_bridge = "2.11"
+
+# Error handling
+thiserror = "1.0"
+
+# Static runtime initialization
+once_cell = "1.19"
+
+# Text processing
+regex = "1.10"
+
+# Self-correction detection
+levenshtein = "1.0"
+
+# Platform integration
+tray-item = "0.10"
+global-hotkey = "0.6"
+enigo = "0.2"
+
+# Platform-specific (conditional)
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser", "windef", "shellapi", "dwmapi"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.26"
+core-graphics = "0.24"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+x11 = { version = "2.21", features = ["xlib"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+# Integration tests
+[[test]]
+name = "ffi_session_test"
+path = "tests/ffi/session_test.rs"
+
+[[test]]
+name = "ffi_transcription_test"
+path = "tests/ffi/transcription_test.rs"
+
+[[test]]
+name = "ai_client_test"
+path = "tests/ai/client_test.rs"
+
+[[test]]
+name = "ai_polisher_test"
+path = "tests/ai/polisher_test.rs"
+
+[[test]]
+name = "ffi_timeout_test"
+path = "tests/ffi/timeout_test.rs"
+
+[[test]]
+name = "quota_check_test"
+path = "tests/quota/check_test.rs"
+
+[[test]]
+name = "e2e_test"
+path = "tests/integration/e2e_test.rs"
+
+[[test]]
+name = "storage_context_test"
+path = "tests/storage/context_test.rs"
+
+[[test]]
+name = "context_windows_test"
+path = "tests/context/windows_test.rs"
+
+[[test]]
+name = "context_macos_test"
+path = "tests/context/macos_test.rs"
+
+[[test]]
+name = "context_linux_test"
+path = "tests/context/linux_test.rs"
+
+[[test]]
+name = "context_ios_test"
+path = "tests/context/ios_test.rs"
+
+[[test]]
+name = "context_android_test"
+path = "tests/context/android_test.rs"
+
+[[test]]
+name = "context_detector_test"
+path = "tests/context/detector_test.rs"
+
+[[test]]
+name = "ai_context_prompts_test"
+path = "tests/ai/context_prompts_test.rs"
+
+[[test]]
+name = "ai_context_polisher_test"
+path = "tests/ai/context_polisher_test.rs"
+
+[[test]]
+name = "ffi_context_test"
+path = "tests/ffi/context_test.rs"
+
+[[test]]
+name = "ffi_dict_test"
+path = "tests/ffi/dict_test.rs"
+
+[[test]]
+name = "storage_dictionary_test"
+path = "tests/storage/dictionary_test.rs"
+
+[[test]]
+name = "processing_dict_app_test"
+path = "tests/processing/dict_app_test.rs"
+
+[[test]]
+name = "processing_pipeline_dict_test"
+path = "tests/processing/pipeline_dict_test.rs"
+
+[[test]]
+name = "storage_dict_export_test"
+path = "tests/storage/dict_export_test.rs"
+
+# User Story 4 - Multi-language support
+[[test]]
+name = "speech_multilang_test"
+path = "tests/speech/multilang_test.rs"
+
+[[test]]
+name = "speech_lang_detect_test"
+path = "tests/speech/lang_detect_test.rs"
+
+[[test]]
+name = "processing_filler_multilang_test"
+path = "tests/processing/filler_multilang_test.rs"
+
+[[test]]
+name = "ai_translation_test"
+path = "tests/ai/translation_test.rs"
+
+[[test]]
+name = "ffi_translation_test"
+path = "tests/ffi/translation_test.rs"
